@@ -10,6 +10,24 @@ public class GameObjectPool
     private Transform _initialSpawnParent = null;
     private Queue<GameObject> _gameObjectPool = null;
 
+    public int PoolObjectCount => _gameObjectPool.Count;
+    public int PoolMaxCount => _maxPoolSize;
+
+    public void SetInitialSpawnPoint(Vector3 point)
+    {
+        _initialSpawnPoint = point;
+    }
+
+    public void SetInitialSpawnQuaternion(Quaternion quaternion)
+    {
+        _initialSpawnQuaternion = quaternion;
+    }
+
+    public void SetInitialSpawnParent(Transform parent)
+    {
+        _initialSpawnParent = parent;
+    }
+
     private GameObject CreateNewObject()
     {
         GameObject spawnedObject = GameObject.Instantiate(_prefab, _initialSpawnPoint, _initialSpawnQuaternion);
@@ -35,14 +53,13 @@ public class GameObjectPool
         return spawnedObject;
     }
 
-    public GameObjectPool(GameObject prefab, Vector3 initSpawnPoint, Quaternion initialSpawnQuaternion, Transform initialSpawnParent,int initialPoolCapacity = 32, int maxPoolSize = 64)
+    public GameObjectPool(GameObject prefab, Vector3 initialSpawnPoint, Quaternion initialSpawnQuaternion, Transform initialSpawnParent, int initialPoolCapacity = 32, int maxPoolSize = 64)
     {
         _gameObjectPool = new Queue<GameObject>(initialPoolCapacity);
         _maxPoolSize = maxPoolSize;
         _prefab = prefab;
-        _initialSpawnPoint = initSpawnPoint;
-        _initialSpawnQuaternion = initialSpawnQuaternion;
-        _initialSpawnParent = initialSpawnParent;
+
+        //세팅값 세팅
 
         for (int i = 0; i < initialPoolCapacity && i < maxPoolSize; i++)
         {
