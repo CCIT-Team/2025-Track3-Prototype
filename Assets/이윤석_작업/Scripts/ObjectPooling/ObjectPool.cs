@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GameObjectPool
@@ -59,7 +60,9 @@ public class GameObjectPool
         _maxPoolSize = maxPoolSize;
         _prefab = prefab;
 
-        //세팅값 세팅
+        _initialSpawnPoint = initialSpawnPoint;
+        _initialSpawnQuaternion = initialSpawnQuaternion;
+        _initialSpawnParent = initialSpawnParent;
 
         for (int i = 0; i < initialPoolCapacity && i < maxPoolSize; i++)
         {
