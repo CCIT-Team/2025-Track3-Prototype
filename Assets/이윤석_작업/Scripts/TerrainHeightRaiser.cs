@@ -4,11 +4,13 @@ public class TerrainHeightRaiser : MonoBehaviour
 {
     private Terrain _terrain;
     private TerrainData _terrainData, _originalData;
+    private int _terrainResolution;
     private void Start()
     {
         _terrain = GetComponent<Terrain>();
         _originalData = _terrain.terrainData;
         _terrainData = _terrain.terrainData = Instantiate(_originalData);
+        _terrainResolution = _terrainData.heightmapResolution;
         GetComponent<TerrainCollider>().terrainData = _terrainData;
     }
 
@@ -16,19 +18,21 @@ public class TerrainHeightRaiser : MonoBehaviour
     {
         brushRadius *= 2;
         Vector3 terrainPos = point - _terrain.transform.position;
-        int Res = _terrainData.heightmapResolution;
 
-        int posX = (int)(terrainPos.x / _terrainData.size.x * Res);
-        int posZ = (int)(terrainPos.z / _terrainData.size.z * Res);
+        int posX = (int)(terrainPos.x / _terrainData.size.x * _terrainResolution);//Mathf.FloorToInt
+        int posZ = (int)(terrainPos.z / _terrainData.size.z * _terrainResolution);
 
-        int rectWidth = Mathf.RoundToInt(brushRadius / _terrainData.size.x * Res);
-        int rectHeight = Mathf.RoundToInt(brushRadius / _terrainData.size.z * Res);
+        int rectWidth = (int)(brushRadius / _terrainData.size.x * _terrainResolution); //Mathf.FloorToInt
+        int rectHeight = (int)(brushRadius / _terrainData.size.z * _terrainResolution);
 
-        int startX = Mathf.Clamp(posX - rectWidth / 2, 0, Res);
-        int startZ = Mathf.Clamp(posZ - rectHeight / 2, 0, Res);
+        int startX = Mathf.Clamp(posX - rectWidth / 2, 0, _terrainResolution);
+        int startZ = Mathf.Clamp(posZ - rectHeight / 2, 0, _terrainResolution);
 
-        int width = Mathf.Clamp(rectWidth, 1, Res - startX);
-        int height = Mathf.Clamp(rectHeight, 1, Res - startZ);
+        int width = Mathf.Clamp(rectWidth, 1, _terrainResolution - startX);
+        int height = Mathf.Clamp(rectHeight, 1, _terrainResolution - startZ);
+        float widthHalf = width * 0.5f;
+        float heightHalf = height * 0.5f;
+        float maxDistanceSqr = widthHalf * widthHalf + heightHalf * heightHalf;
 
         float[,] heights = _terrainData.GetHeights(startX, startZ, width, height);
 
@@ -37,22 +41,16 @@ public class TerrainHeightRaiser : MonoBehaviour
             for (int yIdx = 0; yIdx < height; yIdx++)
             {
                 //거리 기반 감쇠
-                float dx = xIdx - width / 2f;
-                float dz = yIdx - height / 2f;
-                float distance = Mathf.Sqrt(dx * dx + dz * dz);
-                float maxDist = Mathf.Sqrt((width / 2f) * (width / 2f) + (height / 2f) * (height / 2f));
-                float falloff = 1 - (distance / maxDist);
-                falloff = Mathf.Clamp01(falloff);
-
-                float pileShape = heights[yIdx, xIdx] + falloff;//최종 쌓이는 정도
-
-                heights[yIdx, xIdx] += pileShape * brushStrength;
+                float distX = xIdx - widthHalf;
+                float distZ = yIdx - heightHalf;
+                float falloff = Mathf.Clamp01(1 - Mathf.Sqrt((distX * distX + distZ * distZ) / maxDistanceSqr));// distance/maxDistance
+                heights[yIdx, xIdx] += falloff * brushStrength;//최종적으로 쌓일 양에 brushStrength곱해서 조정
             }
         }
 
         _terrainData.SetHeights(startX, startZ, heights);
     }
-
+    
 
     private void OnDisable()
     {
