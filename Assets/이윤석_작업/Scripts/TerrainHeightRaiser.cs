@@ -1,3 +1,4 @@
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class TerrainHeightRaiser : MonoBehaviour
@@ -32,7 +33,7 @@ public class TerrainHeightRaiser : MonoBehaviour
         int height = Mathf.Clamp(rectHeight, 1, _terrainResolution - startZ);
         float widthHalf = width * 0.5f;
         float heightHalf = height * 0.5f;
-        float maxDistanceSqr = widthHalf * widthHalf + heightHalf * heightHalf;
+        float maxDistanceSqr = (widthHalf * widthHalf + heightHalf * heightHalf) * 0.5f; // == /2
 
         float[,] heights = _terrainData.GetHeights(startX, startZ, width, height);
 
@@ -47,11 +48,9 @@ public class TerrainHeightRaiser : MonoBehaviour
                 heights[yIdx, xIdx] += falloff * brushStrength;//최종적으로 쌓일 양에 brushStrength곱해서 조정
             }
         }
-
         _terrainData.SetHeights(startX, startZ, heights);
     }
     
-
     private void OnDisable()
     {
         if (_originalData == null)
