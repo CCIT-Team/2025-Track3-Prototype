@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RainSpawner : MonoBehaviour
@@ -18,12 +17,12 @@ public class RainSpawner : MonoBehaviour
     [SerializeField]
     private int init = 20, max = 60, cnt;
 
-    void Start()
+    private void Start()
     {
         _pool = new GameObjectPool(_prefab, transform.position, Quaternion.identity, this.gameObject.transform, init, max);
     }
 
-    void Rotate(ref float x, ref float y, float rad)
+    private void Rotate(ref float x, ref float y, float rad)
     {
         float rotX = Mathf.Cos(rad) * x - Mathf.Sin(rad) * y;
         float rotY = Mathf.Sin(rad) * x + Mathf.Cos(rad) * y;
@@ -31,7 +30,7 @@ public class RainSpawner : MonoBehaviour
         y = rotY;
     }
 
-    void CalcPos(ref Vector3 pos)
+    private void CalcPos(ref Vector3 pos)
     {
         float rad = Mathf.Deg2Rad * transform.eulerAngles.y * -1;
         pos.x = UnityEngine.Random.Range(transform.position.x, transform.position.x + _spawnAreaSize.x);
@@ -45,7 +44,7 @@ public class RainSpawner : MonoBehaviour
         pos.z += transform.position.z;
     }
 
-    IEnumerator spawn()
+    private IEnumerator SpawnRain()
     {
         Vector3 pos = transform.position;
 
@@ -61,8 +60,8 @@ public class RainSpawner : MonoBehaviour
     }
 
     [ContextMenu("spawn")]
-    public void Func()
+    public void Spawn()
     {
-        StartCoroutine(spawn());
+        StartCoroutine(SpawnRain());
     }
 }
