@@ -102,7 +102,6 @@ public class TerrainHeightRaiser : MonoBehaviour
                 alphaMaps[yIdx, xIdx, layerIndex] += rate;
                 //normalization
                 float sum = 0;
-                Debug.Log(rate);
                 for (int i = 0; i < layerLength; i++)
                 {
                     sum += alphaMaps[yIdx, xIdx, i];
