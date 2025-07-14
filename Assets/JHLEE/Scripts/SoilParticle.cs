@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Collider))]
 public class SoilParticle : MonoBehaviour
 {
     [Header("마찰 계수")]
@@ -23,49 +24,62 @@ public class SoilParticle : MonoBehaviour
     public float heightOffset  = 0.3f;
 
     private Rigidbody _rb;
+    private Collider _col;
     private TerrainRaiseManager  _raiseMgr;
-    private float                _timer;
+    private float _timer;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _col = GetComponent<Collider>();
+
+        // 물리 머티리얼로 마찰력 적용
+        var mat = new PhysicMaterial(name + "_PhysMat")
+        {
+            dynamicFriction = dynamicFrictionCoef,
+            staticFriction  = staticFrictionCoef,
+            frictionCombine = PhysicMaterialCombine.Maximum
+        };
+        _col.material = mat;
+
         // TerrainRaiseManager 참조
         _raiseMgr = FindObjectOfType<TerrainRaiseManager>();
     }
 
     void Start()
     {
-        _rb.drag = 0f;
-        _rb.angularDrag = 0f;
+        // Rigidbody 드래그 초기값
+        _rb.drag = dynamicFrictionCoef;
+        _rb.angularDrag = dynamicFrictionCoef;
     }
 
     void Update()
     {
-        if (_rb == null || _rb.isKinematic || transform.parent != null)
+        if (_rb.isKinematic || transform.parent != null)
         {
             _timer = 0f;
             return;
         }
 
-        // Terrain 높이 샘플링
+        // Terrain 높이 보정
         Terrain terrain = Terrain.activeTerrain;
         float terrainY = terrain.SampleHeight(transform.position) + terrain.GetPosition().y;
-
-        // 땅 아래 침투 보정
         if (transform.position.y < terrainY + 0.01f)
         {
-            Vector3 pos = transform.position;
+            var pos = transform.position;
             pos.y = terrainY + 0.01f;
             transform.position = pos;
-            // kinematic 아닐 때만 속도 초기화
             if (!_rb.isKinematic)
             {
-                _rb.velocity = Vector3.zero;
+                // 1) 속도 초기화
+                _rb.velocity        = Vector3.zero;
                 _rb.angularVelocity = Vector3.zero;
+                // 2) 물리 제약 변경
+                _rb.isKinematic = true;  
             }
         }
 
-        // Rest 감지 후 매니저에 등록
+        // Rest 감지 후 Terrain에 등록
         if (_rb.velocity.magnitude < restThreshold)
         {
             _timer += Time.deltaTime;
@@ -75,23 +89,16 @@ public class SoilParticle : MonoBehaviour
                 _timer = 0f;
             }
         }
-        else
-        {
-            _timer = 0f;
-        }
+        else _timer = 0f;
     }
 
     void OnCollisionStay(Collision col)
     {
-        if (_rb == null) return;
-        // kinematic 상태일 경우 물리 처리 생략
         if (_rb.isKinematic) return;
-        if (col.collider == null) return;
         if (col.collider.gameObject.layer != LayerMask.NameToLayer("Terrain")) return;
 
         Vector3 avgNormal = Vector3.zero;
-        foreach (var ct in col.contacts)
-            avgNormal += ct.normal;
+        foreach (var ct in col.contacts) avgNormal += ct.normal;
         avgNormal.Normalize();
 
         float slopeAngle = Vector3.Angle(avgNormal, Vector3.up);
@@ -103,27 +110,22 @@ public class SoilParticle : MonoBehaviour
         Vector3 velXZ = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
         if (downhillAccel < maxStaticAccel && velXZ.magnitude < stopThreshold)
         {
-            // XZ 방향만 정지
-            Vector3 v = _rb.velocity;
-            _rb.velocity = new Vector3(0f, v.y, 0f);
+            // 정지
+            _rb.velocity = new Vector3(0f, _rb.velocity.y, 0f);
             _rb.angularVelocity = Vector3.zero;
             _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
         }
         else
         {
+            // 운동 마찰
             _rb.constraints = RigidbodyConstraints.None;
-            float normalForce = _rb.mass * normalAccel;
-            Vector3 frictionDir = velXZ.magnitude > 0f ? -velXZ.normalized : Vector3.zero;
-            Vector3 friction = frictionDir * (dynamicFrictionCoef * normalForce);
-            _rb.AddForce(friction, ForceMode.Force);
         }
     }
 
     void OnCollisionExit(Collision col)
     {
         if (_rb == null) _rb = GetComponent<Rigidbody>();
-        if (col.collider == null) return;
-        if (col.collider.gameObject.layer != LayerMask.NameToLayer("Terrain")) return;
+        if (col.collider.gameObject.layer != LayerMask.NameToLayer("Raindrops")) return;
         _rb.constraints = RigidbodyConstraints.None;
     }
 }

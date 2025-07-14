@@ -6,33 +6,21 @@ public class BucketGrabberMulti : MonoBehaviour
     public enum Mode { Idle = 0, Dig = 1, Dump = 2 }
 
     [Header("Grab Zones (층별)")]
-    public Collider[] grabZones;    // 0=1층, 1=2층, 2=3층
-    public int[]      zoneCapacities;
+    public Collider[] grabZones;       // 각 층별 Grab Zone
+    public int[]      zoneCapacities;  // 각 Zone 최대 용량
 
-    [Header("모드 전환 키")]
-    public KeyCode nextModeKey = KeyCode.E;   // Idle→Dig→Dump
-    public KeyCode prevModeKey = KeyCode.Q;   // Dump→Dig→Idle
-
-    [Header("버킷 회전")]
-    public Transform bucketTransform;
-    public Vector3   idleEuler = Vector3.zero;
-    public Vector3   digEuler  = new Vector3(-45,0,0);
-    public Vector3   dumpEuler = new Vector3(-90,0,0);
-    public float     lerpSpeed = 5f;
-
-    Mode           _mode = Mode.Idle;
-    Quaternion     _targetRot;
-    Collider[]     _bucketCols;
-    TerrainCollider _terrainCol;
-    BucketController _bucketCtrl;
+    Mode             _mode = Mode.Idle;
+    Collider[]       _bucketCols;
+    TerrainCollider  _terrainCol;
     List<Rigidbody>[] _grabbed;
-    int            _currentZone = 0;
-    bool           _grabbingEnabled = true;
+    int              _currentZone = 0;
+    bool             _grabbingEnabled = true;
 
     public Mode CurrentMode => _mode;
 
     void Awake()
     {
+        // Grab Zone 초기화
         int n = grabZones.Length;
         _grabbed = new List<Rigidbody>[n];
         for (int i = 0; i < n; i++)
@@ -43,36 +31,16 @@ public class BucketGrabberMulti : MonoBehaviour
             fwd.Initialize(this, i);
         }
 
-        _bucketCols  = GetComponentsInChildren<Collider>();
-        _terrainCol  = FindObjectOfType<TerrainDeformManager>()
+        // 충돌 무시 설정을 위해 버킷 콜라이더들 수집
+        _bucketCols = GetComponentsInChildren<Collider>();
+        _terrainCol = FindObjectOfType<TerrainDeformManager>()
                           .GetComponent<TerrainCollider>();
-        _bucketCtrl  = GetComponent<BucketController>();
-
-        _targetRot = Quaternion.Euler(idleEuler);
-        if (bucketTransform != null)
-            bucketTransform.localRotation = _targetRot;
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(nextModeKey) && _mode != Mode.Dump)
-            SetMode(_mode + 1);
-        if (Input.GetKeyDown(prevModeKey) && _mode != Mode.Idle)
-            SetMode(_mode - 1);
-
-        switch (_mode)
-        {
-          case Mode.Dig:  _targetRot = Quaternion.Euler(digEuler);  break;
-          case Mode.Dump: _targetRot = Quaternion.Euler(dumpEuler); break;
-          default:        _targetRot = Quaternion.Euler(idleEuler); break;
-        }
-        bucketTransform.localRotation = Quaternion.Slerp(
-            bucketTransform.localRotation,
-            _targetRot,
-            Time.deltaTime * lerpSpeed);
-    }
-
-    void SetMode(Mode newMode)
+    /// <summary>
+    /// 외부에서 모드를 변경할 때 호출하세요.
+    /// </summary>
+    public void SetMode(Mode newMode)
     {
         if (newMode == _mode) return;
         Mode old = _mode;
@@ -82,38 +50,37 @@ public class BucketGrabberMulti : MonoBehaviour
 
     void OnModeChanged(Mode from, Mode to)
     {
-        // Dig 모드 전환 시 2,3층에서 잡힌 입자 방출
-        if (to == Mode.Dig)
-            DetachZones(1);
-        // Dump 모드 전환 시 전체 방출
-        if (to == Mode.Dump)
-            DetachAllGrabbed();
+        // Dig 모드 전환 시 2~n층 Zone 비우기
+        if (to == Mode.Dig)  DetachZones(1);
+        // Dump 모드 전환 시 전체 비우기
+        if (to == Mode.Dump) DetachAllGrabbed();
 
+        // Dig 모드일 때만 Terrain 충돌 무시
         bool ignoreTerrain = (to == Mode.Dig);
         foreach (var bc in _bucketCols)
             Physics.IgnoreCollision(bc, _terrainCol, ignoreTerrain);
 
-        // 모든 GrabZone 콜라이더 비활성화
+        // Zone 활성화/비활성화
         for (int i = 0; i < grabZones.Length; i++)
             grabZones[i].enabled = false;
 
-        // 모드별로 필요한 존만 활성화
         switch (to)
         {
             case Mode.Idle:
+                // 모든 Zone 활성화
                 for (int i = 0; i < grabZones.Length; i++)
                     grabZones[i].enabled = true;
                 _currentZone     = 0;
                 _grabbingEnabled = true;
                 break;
-
             case Mode.Dig:
+                // 1층 Zone만 활성화
                 grabZones[0].enabled = true;
                 _currentZone     = 0;
                 _grabbingEnabled = true;
                 break;
-
             case Mode.Dump:
+                // Grab 기능 비활성화
                 _currentZone     = 0;
                 _grabbingEnabled = false;
                 break;
@@ -124,18 +91,18 @@ public class BucketGrabberMulti : MonoBehaviour
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
 
-        var rb = soil.GetComponent<Rigidbody>();
+        var rb  = soil.GetComponent<Rigidbody>();
         var col = soil.GetComponent<Collider>();
         if (rb == null || col == null) return;
 
+        // 입자 고정 및 부모로 이동
         rb.isKinematic = true;
-        col.enabled    = false;
+        col.enabled     = false;
         soil.transform.SetParent(grabZones[zoneIndex].transform, true);
-        // soilParticle 태그 유지만 하면 새로 생성된 입자로만 Grab
-        // 기존 토출된 입자는 태그 제거해서 재 Grab 방지
-        soil.tag = "SoilParticle";
+        soil.tag        = "SoilParticle";
         _grabbed[zoneIndex].Add(rb);
 
+        // 제한 용량 초과 시 다음 Zone 활성화
         if (_grabbed[zoneIndex].Count >= zoneCapacities[zoneIndex])
         {
             grabZones[zoneIndex].enabled = false;
@@ -159,8 +126,7 @@ public class BucketGrabberMulti : MonoBehaviour
                 if (rb == null) { list.RemoveAt(i); continue; }
                 rb.isKinematic = false;
                 var col = rb.GetComponent<Collider>();
-                col.enabled = true;
-                // Detach 후 SoilParticle 태그 제거
+                col.enabled     = true;
                 rb.gameObject.tag = "Untagged";
                 rb.transform.SetParent(null, true);
                 list.RemoveAt(i);
