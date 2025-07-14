@@ -4,6 +4,8 @@ using UnityEngine;
 public class PilableParticle : MonoBehaviour, IPoolable
 {
     [SerializeField]
+    private TerrainLayer _layer;
+    [SerializeField]
     private float _waitTime;
 
     private GameObjectPool _pool = null;
@@ -12,6 +14,12 @@ public class PilableParticle : MonoBehaviour, IPoolable
 
     [SerializeField]
     private float _power;
+
+    public void SetTerrainLayer(TerrainLayer layer)
+    {
+        _layer = layer;
+    }
+
     private IEnumerator Pile(TerrainHeightRaiser raiser)
     {
         if (_pool == null)
@@ -20,7 +28,7 @@ public class PilableParticle : MonoBehaviour, IPoolable
         }
 
         yield return new WaitForSeconds(_waitTime);
-        raiser.RaiseHeight(transform.position, 5f, transform.localScale.y / _power);
+        raiser.PileTerrain(transform.position, _layer, 5f, transform.localScale.y / _power);
         _pool.ReturnGameObject(gameObject);
     }
 
