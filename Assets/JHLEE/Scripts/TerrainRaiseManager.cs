@@ -54,34 +54,40 @@ public class TerrainRaiseManager : MonoBehaviour
     {
         if (_stopped.Count == 0) return;
 
-        // 1) TerrainCollider 비활성화로 충돌 방지
+        // 1) TerrainCollider 비활성화
         if (_terrainCollider != null)
             _terrainCollider.enabled = false;
 
-        // 2) 입자 물리 정지: Collider 비활성, Rigidbody Freeze
+        // 2) 입자 물리 정지: Collider 비활성, Rigidbody 제약만 설정
         foreach (var go in _stopped)
         {
             if (go == null) continue;
             foreach (var col in go.GetComponentsInChildren<Collider>())
                 col.enabled = false;
+
             var rb = go.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                // 이미 kinematic 상태가 아니면 속도 초기화
+                if (!rb.isKinematic)
+                {
+                    rb.velocity        = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
+                // 그 다음 kinematic 전환 및 완전 동결
                 rb.isKinematic = true;
                 rb.constraints = RigidbodyConstraints.FreezeAll;
             }
         }
 
-        // 3) Terrain 베이크 처리
+        // 3) Terrain 베이크
         BakeTerrainFromParticles();
 
         // 4) TerrainCollider 재활성화
         if (_terrainCollider != null)
             _terrainCollider.enabled = true;
 
-        // 5) 베이크 후 입자 제거 및 리스트 초기화
+        // 5) 입자 제거 및 리스트 초기화
         foreach (var go in _stopped)
             if (go != null) Destroy(go);
         _stopped.Clear();

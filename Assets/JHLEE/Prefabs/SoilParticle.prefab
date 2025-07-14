@@ -92,8 +92,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   staticFrictionCoef: 1
   dynamicFrictionCoef: 1
-  stopThreshold: 0.1
-  restThreshold: 0.1
+  stopThreshold: 0.8
+  restThreshold: 0.8
   restTime: 0.5
   bakeRadius: 0.28
   heightOffset: 0.15
