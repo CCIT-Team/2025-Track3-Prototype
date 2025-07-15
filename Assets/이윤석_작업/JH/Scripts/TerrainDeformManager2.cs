@@ -8,6 +8,10 @@ public class TerrainDeformManager2 : MonoBehaviour
     private TerrainData _terrainData;
     private int _hmResolution;
     private int _amResolution;
+    [SerializeField][Range(0,1)]
+    private float _diggedTextureMin=0;
+    [SerializeField][Range(0,1)]
+    private float _diggedTextureMax=1;
 
     void Awake()
     {
@@ -15,6 +19,77 @@ public class TerrainDeformManager2 : MonoBehaviour
         _terrainData = _terrain.terrainData;
         _hmResolution = _terrainData.heightmapResolution;
         _amResolution = _terrainData.alphamapResolution;
+    }
+
+    public void PaintTexture(Vector3 min, Vector3 max, TerrainLayer targetLayer, float weight)
+    {
+        int layerIndex = -1;
+
+        for (int i = 0; i < _terrainData.terrainLayers.Length; i++)
+        {
+            if (_terrainData.terrainLayers[i] == targetLayer)
+            {
+                layerIndex = i;
+                break;
+            }
+        }
+
+        if (layerIndex < 0)
+        {
+            Debug.Log("찾을 수 없는 레이어");
+            return;
+        }
+
+        Vector3 terrainPos = _terrain.transform.position;
+        int xStart = Mathf.Clamp(
+            Mathf.RoundToInt((min.x - terrainPos.x) / _terrainData.size.x * _amResolution),
+            0, _amResolution - 1);
+        int zStart = Mathf.Clamp(
+            Mathf.RoundToInt((min.z - terrainPos.z) / _terrainData.size.z * _amResolution),
+            0, _amResolution - 1);
+        int xEnd = Mathf.Clamp(
+            Mathf.RoundToInt((max.x - terrainPos.x) / _terrainData.size.x * _amResolution),
+            0, _amResolution - 1);
+        int zEnd = Mathf.Clamp(
+            Mathf.RoundToInt((max.z - terrainPos.z) / _terrainData.size.z * _amResolution),
+            0, _amResolution - 1);
+
+        int sizeX = Mathf.Abs(xEnd - xStart) + 1;
+        int sizeZ = Mathf.Abs(zEnd - zStart) + 1;
+        if (sizeX <= 0 || sizeZ <= 0) return;
+
+        float[,,] alphaMaps = _terrainData.GetAlphamaps(xStart, zStart, sizeX, sizeZ);
+        int layerLength = alphaMaps.GetLength(2);
+        
+
+        for (int z = 0; z < sizeZ; z++)
+        {
+            for (int x = 0; x < sizeX; x++)
+            {
+                if (alphaMaps[z, x, layerIndex] <= _diggedTextureMin)
+                {
+                    alphaMaps[z, x, layerIndex] = 0.2f;
+                }
+                else if (alphaMaps[z,x,layerIndex] <= _diggedTextureMax)
+                {
+                    alphaMaps[z, x, layerIndex] += weight;
+                }
+                
+                //normalization
+                float sum = 0;
+                for (int i = 0; i < layerLength; i++)
+                {
+                    sum += alphaMaps[z, x, i];
+                }
+
+                for (int i = 0; i < layerLength; i++)
+                {
+                    alphaMaps[z, x, i]/=sum;
+                }
+            }
+        }
+
+        _terrainData.SetAlphamaps(xStart, zStart, alphaMaps);
     }
 
     /// <summary>

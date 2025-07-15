@@ -42,6 +42,10 @@ public class BucketController2 : MonoBehaviour
     [SerializeField]
     private Material[] _mats;
     private List<Material> _buffer = new List<Material>();
+    [SerializeField]
+    private TerrainLayer _diggedLayerTexture;
+    [SerializeField]
+    private float _diggedLayerWeight=3;
 
     public bool isDigging { get; private set; }
 
@@ -120,6 +124,7 @@ public class BucketController2 : MonoBehaviour
         float deltaVol = excavateRate * Time.fixedDeltaTime;
         float penetrationDepth = Mathf.Max(0f, groundY - bladeY);
         float carved = _deformer.LowerRectAABB(bb.min, bb.max, deltaVol, penetrationDepth);
+        _deformer.PaintTexture(bb.min,bb.max, _diggedLayerTexture, _diggedLayerWeight);
         
 
         if (particlePerCubicM <= 0f)
