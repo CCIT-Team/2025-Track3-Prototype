@@ -41,7 +41,14 @@ public class BucketGrabberMultiMerged : MonoBehaviour
         }
         // Ensure bucket colliders set
         if (bucketColliders == null || bucketColliders.Length == 0)
-            bucketColliders = GetComponentsInChildren<Collider>();
+        {
+            var planeObj = GameObject.Find("plane.003");
+            if (planeObj != null)
+            {
+                // 단일 콜라이더라면 GetComponent, 여럿일 수도 있으므로 GetComponents
+                bucketColliders = planeObj.GetComponents<Collider>();
+            }
+        }
     }
 
     /// <summary>

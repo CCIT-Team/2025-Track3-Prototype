@@ -4,6 +4,7 @@ using UnityEngine;
 /// Initializes the Terrain at scene start based on settings:
 /// - Flat baseline height
 /// - Copy heightmap from another Terrain
+/// - Reset painted textures to a single layer
 /// </summary>
 [RequireComponent(typeof(Terrain))]
 public class TerrainInitializerMerged : MonoBehaviour
@@ -19,6 +20,12 @@ public class TerrainInitializerMerged : MonoBehaviour
     [SerializeField] private bool useSourceCopy = false;
     [Tooltip("Source Terrain to copy heightmap from.")]
     [SerializeField] private Terrain sourceTerrain;
+
+    [Header("Texture Reset Settings")]
+    [Tooltip("Enable to reset all painted textures to a single layer.")]
+    [SerializeField] private bool resetTextures = false;
+    [Tooltip("Index of the terrain layer to assign when resetting textures.")]
+    [SerializeField] private int defaultTextureLayerIndex = 0;
 
     private Terrain _terrain;
     private TerrainData _terrainData;
@@ -36,6 +43,9 @@ public class TerrainInitializerMerged : MonoBehaviour
 
         if (useSourceCopy && sourceTerrain != null)
             CopySourceHeight();
+
+        if (resetTextures)
+            InitializeTextures();
     }
 
     /// <summary>
@@ -65,11 +75,12 @@ public class TerrainInitializerMerged : MonoBehaviour
 
         if (copyRes != dstRes)
         {
-            // Create a new full-size array and populate with source + baseline
             float[,] fullHeights = new float[dstRes, dstRes];
+            // Copy source
             for (int z = 0; z < copyRes; z++)
                 for (int x = 0; x < copyRes; x++)
                     fullHeights[z, x] = srcHeights[z, x];
+            // Fill rest with baseline
             for (int z = copyRes; z < dstRes; z++)
                 for (int x = 0; x < dstRes; x++)
                     fullHeights[z, x] = baselineNorm;
@@ -83,5 +94,31 @@ public class TerrainInitializerMerged : MonoBehaviour
         {
             _terrainData.SetHeights(0, 0, srcHeights);
         }
+    }
+
+    /// <summary>
+    /// Resets all splatmaps (texture weights) so that only one layer is painted.
+    /// </summary>
+    private void InitializeTextures()
+    {
+        int alphaRes = _terrainData.alphamapResolution;
+        int layerCount = _terrainData.terrainLayers.Length;
+
+        // Create an empty splatmap array
+        float[,,] alphas = new float[alphaRes, alphaRes, layerCount];
+
+        // Assign full weight to the default layer
+        for (int z = 0; z < alphaRes; z++)
+        {
+            for (int x = 0; x < alphaRes; x++)
+            {
+                for (int l = 0; l < layerCount; l++)
+                {
+                    alphas[z, x, l] = (l == defaultTextureLayerIndex) ? 1f : 0f;
+                }
+            }
+        }
+
+        _terrainData.SetAlphamaps(0, 0, alphas);
     }
 }

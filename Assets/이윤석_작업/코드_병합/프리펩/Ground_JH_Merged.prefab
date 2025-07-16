@@ -142,11 +142,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dbc5b71df895d24899e63566156b2b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrain: {fileID: 8246249363982604608}
-  autoBakeEnabled: 1
-  autoBakeInterval: 5
-  defaultBakeRadius: 0.5
-  defaultHeightOffset: 0.3
-  relaxRadius: 2
-  maxSlopeAngleDeg: 35
-  relaxStrength: 0.01
+  useFlatBaseline: 1
+  baselineNorm: 0.5
+  useSourceCopy: 0
+  sourceTerrain: {fileID: 8246249363982604608}
+  resetTextures: 1
+  defaultTextureLayerIndex: 0

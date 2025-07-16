@@ -2203,10 +2203,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6452184524941575218, guid: 07c67a5b88c482945830ae16ebd62023,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2532179308671692491}
-    - targetCorrespondingSourceObject: {fileID: 6452184524941575218, guid: 07c67a5b88c482945830ae16ebd62023,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 6754544431884258896}
     - targetCorrespondingSourceObject: {fileID: 6452184524941575218, guid: 07c67a5b88c482945830ae16ebd62023,
         type: 3}
@@ -2245,29 +2241,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7003912639213555022}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2532179308671692491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4087059319594092924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed6a7bd53268cb04b860f33b13081c74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grabZones:
-  - {fileID: 7508478149610293503}
-  - {fileID: 5715967968963765246}
-  - {fileID: 8440457992776871491}
-  zoneCapacities: 1e0000001e0000001e000000
-  soilLayer:
-    serializedVersion: 2
-    m_Bits: 16
-  bucketColliders:
-  - {fileID: 6754544431884258896}
-  terrainCollider: {fileID: 0}
 --- !u!65 &6754544431884258896
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2438,7 +2411,6 @@ MonoBehaviour:
   soilLayer:
     serializedVersion: 2
     m_Bits: 16
-  bucketColliders:
-  - {fileID: 6754544431884258896}
+  bucketColliders: []
   terrainCollider: {fileID: 5353222306216646332, guid: 1dfd990f08752cc47b37087d5d87e4c5,
     type: 3}
