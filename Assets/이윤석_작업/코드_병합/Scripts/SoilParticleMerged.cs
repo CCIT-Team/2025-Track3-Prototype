@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class SoilParticleMerged : MonoBehaviour
+public class SoilParticleMerged : MonoBehaviour, IPoolable
 {
     [Header("Friction Coefficients")]
     [SerializeField, Tooltip("Static friction coefficient (μ)")] private float staticFriction = 0.8f;
@@ -24,6 +24,8 @@ public class SoilParticleMerged : MonoBehaviour
     private TerrainRaiseManagerMerged _raiseManager;
     private float _restTimer;
     private const float epsilon = 0.01f;
+
+    private GameObjectPool _pool;
 
     private TerrainLayer _layer;//?
 
@@ -137,5 +139,15 @@ public class SoilParticleMerged : MonoBehaviour
     {
         if (col.collider.gameObject.layer != LayerMask.NameToLayer("SoilParticle")) return;
         _rb.constraints = RigidbodyConstraints.None;
+    }
+
+    public void SetPoolInstance(GameObjectPool poolInstance)
+    {
+        _pool = poolInstance;
+    }
+
+    public bool ComparePoolInstance(GameObjectPool poolInstance)
+    {
+        return _pool == poolInstance;
     }
 }

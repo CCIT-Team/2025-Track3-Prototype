@@ -5,7 +5,7 @@ using UnityEngine;
 /// 입자들이 쌓인 형태를 깊이(bakeRadius)를 가진 구 형태로 Terrain에 베이크하는 매니저.
 /// SoilParticle에서 RegisterStop()으로 모은 입자를, autoBakeInterval이 지나면 자동으로 처리합니다.
 /// </summary>
-public class TerrainRaiseManagerMerged : MonoBehaviour
+public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
 {
     [Header("Terrain Reference")]
     [SerializeField] private Terrain terrain;
@@ -28,6 +28,8 @@ public class TerrainRaiseManagerMerged : MonoBehaviour
     private List<GameObject> _stopped = new List<GameObject>();
     private float _bakeTimer = 0f;
 
+    private GameObjectPool _pool;
+
     void Awake()
     {
         if (terrain == null) terrain = Terrain.activeTerrain;
@@ -37,8 +39,10 @@ public class TerrainRaiseManagerMerged : MonoBehaviour
 
     public void RegisterStop(GameObject particle)
     {
-        if (particle == null || _stopped.Contains(particle)) 
+        if (particle == null || _stopped.Contains(particle))
+        {
             return;
+        }
 
         // 단순히 리스트에 추가만!
         _stopped.Add(particle);
@@ -57,7 +61,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour
 
     private void BakeAndClearParticles()
     {
-        if (_stopped.Count == 0) 
+        if (_stopped.Count == 0)
             return;
 
         // 1) Terrain 베이크만 수행
@@ -66,8 +70,14 @@ public class TerrainRaiseManagerMerged : MonoBehaviour
 
         // 2) 베이크된 입자 일괄 파괴
         foreach (var go in _stopped)
+        {
             if (go != null)
-                Destroy(go);
+            {
+                //Destroy(go);
+                _pool.ReturnGameObject(go);
+            }
+        }
+                
 
         _stopped.Clear();
     }
@@ -275,6 +285,16 @@ public class TerrainRaiseManagerMerged : MonoBehaviour
         }
 
         _terrainData.SetAlphamaps(0, 0, alphamaps);
+    }
+    
+    public void SetPoolInstance(GameObjectPool poolInstance)
+    {
+        _pool = poolInstance;
+    }
+
+    public bool ComparePoolInstance(GameObjectPool poolInstance)
+    {
+        return _pool == poolInstance;
     }
 
 }

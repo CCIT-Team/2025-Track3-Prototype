@@ -4,7 +4,7 @@ using UnityEngine.TerrainTools;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class BucketControllerMerged : MonoBehaviour
+public class BucketControllerMerged : MonoBehaviour, IPoolable
 {
     [Header("Blade Settings")]
     [Tooltip("Collider used for AABB excavation volume.")]
@@ -63,6 +63,8 @@ public class BucketControllerMerged : MonoBehaviour
     private TerrainLayer _diggedLayerTexture;
     [SerializeField]
     private float _diggedLayerWeight = 3;
+
+    private GameObjectPool _pool;
 
     void Start()
     {
@@ -158,7 +160,7 @@ public class BucketControllerMerged : MonoBehaviour
         if (_modeCtrl.CurrentMode != desired)
             _modeCtrl.SetMode(desired);
     }
-    
+
     private void DetectDig()
     {
         float bladeY = bladeCollider.bounds.min.y;
@@ -186,10 +188,12 @@ public class BucketControllerMerged : MonoBehaviour
             float z = Random.Range(bb.min.z, bb.max.z);
             float y = terrain.SampleHeight(new Vector3(x, 0f, z))
                       + terrain.transform.position.y + 0.5f;
-            var go = Instantiate(soilPrefab, new Vector3(x, y, z), Quaternion.identity);
+            //var go = Instantiate(soilPrefab, new Vector3(x, y, z), Quaternion.identity);
+            _pool.SetInitialSpawnPoint(new Vector3(x,y+1f,z));
+            var go = _pool.GetGameObject();
             if (go.TryGetComponent<Rigidbody>(out var rb))
             {
-                    rb.mass = 0.1f;
+                rb.mass = 0.1f;
             }
 
             if (go.TryGetComponent<SoilParticleMerged>(out var p))
@@ -211,5 +215,14 @@ public class BucketControllerMerged : MonoBehaviour
         }
     }
 
+    public void SetPoolInstance(GameObjectPool poolInstance)
+    {
+        _pool = poolInstance;
+    }
+
+    public bool ComparePoolInstance(GameObjectPool poolInstance)
+    {
+        return _pool == poolInstance;
+    }
 
 }
