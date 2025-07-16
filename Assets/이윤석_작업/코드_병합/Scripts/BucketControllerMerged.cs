@@ -52,7 +52,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     [Tooltip("Terrain used for height sampling.")]
     [SerializeField] private Terrain terrain;
     [Tooltip("Controller providing bucketAngle.")]
-    [SerializeField] private ExcavatorController excavatorController;
+    [SerializeField] private ExcavatorController_publicMerged excavatorController;
     private BucketGrabberMultiMerged _modeCtrl;
 
     private Rigidbody _rb;
@@ -106,7 +106,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
         // ExcavatorController 할당 여부 확인
         if (excavatorController == null)
         {
-            excavatorController = FindObjectOfType<ExcavatorController>();
+            excavatorController = FindObjectOfType<ExcavatorController_publicMerged>();
             if (excavatorController == null)
                 Debug.LogError("[BucketController] ExcavatorController not found in scene or inspector");
         }
@@ -145,11 +145,11 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
         float carved = deformManager.LowerRectAABB(bb.min, bb.max, deltaVol, penetration);
         deformManager.PaintTexture(bb.min, bb.max, _diggedLayerTexture, _diggedLayerWeight);
 
-        /*if (carved > 0f && dustVFXPrefab != null && Time.time >= nextVfxTime)
+        if (carved > 0f && dustVFXPrefab != null && Time.time >= nextVfxTime)
         {
             nextVfxTime = Time.time + vfxCooldown;
             Instantiate(dustVFXPrefab, bb.center, Quaternion.identity);
-        }*/
+        }
 
         SpawnParticles(carved, bb);
     }

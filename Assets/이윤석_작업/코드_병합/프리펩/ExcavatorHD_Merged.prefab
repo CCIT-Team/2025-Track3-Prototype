@@ -9802,11 +9802,11 @@ MonoBehaviour:
   idleMaxAngle: 90
   dustVFXPrefab: {fileID: 97370009020866654, guid: 3cb28cbc25013e94594fb8e175f05c22,
     type: 3}
-  vfxCooldown: 70
+  vfxCooldown: 0.5
   deformManager: {fileID: 4852109145475115359, guid: 1dfd990f08752cc47b37087d5d87e4c5,
     type: 3}
   terrain: {fileID: 8246249363982604608, guid: 1dfd990f08752cc47b37087d5d87e4c5, type: 3}
-  excavatorController: {fileID: 2072253545084313927}
+  excavatorController: {fileID: 4073882124216546435}
   _mats:
   - {fileID: 2100000, guid: d3585bf548b58064998233c58b7454f5, type: 2}
   - {fileID: 2100000, guid: 0f6b12df31674af41a7b12f65d4c1179, type: 2}
@@ -20766,7 +20766,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1834163969598563728}
-  - component: {fileID: 2072253545084313927}
+  - component: {fileID: 4073882124216546435}
   m_Layer: 0
   m_Name: ExcavatorController
   m_TagString: Untagged
@@ -20789,7 +20789,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7382581936024188155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.355}
---- !u!114 &2072253545084313927
+--- !u!114 &4073882124216546435
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20798,7 +20798,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6280843813852200846}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3108a5dbc74c22e46bd97c4483dadc6b, type: 3}
+  m_Script: {fileID: 11500000, guid: fb9e2c79ecede204f8a21cff82908679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   swing: {fileID: 3742589954922088238}
@@ -20815,8 +20815,8 @@ MonoBehaviour:
   maxBoomAngle: 45
   minArmAngle: -90
   maxArmAngle: 90
-  minBucketAngle: -120
-  maxBucketAngle: 45
+  minBucketAngle: -90
+  maxBucketAngle: 90
   bucketAngle: 0
 --- !u!1 &6288456653722759441
 GameObject:

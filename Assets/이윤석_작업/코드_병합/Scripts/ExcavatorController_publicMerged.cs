@@ -3,83 +3,97 @@ using UnityEngine;
 public class ExcavatorController_publicMerged : MonoBehaviour
 {
     [Header("Excavator Parts")]
-    [SerializeField] private Transform swing;
-    [SerializeField] private Transform boom;
-    [SerializeField] private Transform arm;
-    [SerializeField] private Transform bucket;
+    public Transform swing;        // ExcavatorBody - 굴착기 차체 (좌우 회전)
+    public Transform boom;         // Arm - 주 팔 (상하 움직임)
+    public Transform arm;          // Arm_Second - 보조 팔 (붐에 연결)
+    public Transform bucket;       // Bucket - 버킷 (암에 연결)
 
-    [Header("Rotation Speeds (deg/s)")]
-    [SerializeField] private float swingSpeed = 30f;
-    [SerializeField] private float boomSpeed = 30f;
-    [SerializeField] private float armSpeed = 30f;
-    [SerializeField] private float bucketSpeed = 30f;
+    [Header("Rotation Settings")]
+    public float swingSpeed = 30f;
+    public float boomSpeed = 30f;
+    public float armSpeed = 30f;
+    public float bucketSpeed = 30f;
 
-    [Header("Rotation Limits (deg)")]
-    [SerializeField] private Vector2 swingLimits = new Vector2(-90f, 90f);
-    [SerializeField] private Vector2 boomLimits = new Vector2(-45f, 45f);
-    [SerializeField] private Vector2 armLimits = new Vector2(-90f, 90f);
-    [SerializeField] private Vector2 bucketLimits = new Vector2(-90f, 90f);
+    [Header("Rotation Angle Limits")]
+    public float minSwingAngle = -135f, maxSwingAngle = 135f;
+    public float minBoomAngle = -45f, maxBoomAngle = 45f;
+    public float minArmAngle = -90f, maxArmAngle = 90f;
+    public float minBucketAngle = -90f, maxBucketAngle = 90f;
 
-    private float swingAngle;
-    private float boomAngle;
-    private float armAngle;
-    private float bucketAngle;
+    // 현재 각 파트의 목표 회전 각도
+    private float swingAngle = 0f;
+    private float boomAngle = 0f;
+    private float armAngle = 0f;
+    public float bucketAngle = 0f;
 
-    private Quaternion initSwingRot;
-    private Quaternion initBoomRot;
-    private Quaternion initArmRot;
-    private Quaternion initBucketRot;
-
-    /// <summary>
-    /// Current bucket angle in degrees, accessible by BucketController.
-    /// </summary>
-    public float BucketAngle => bucketAngle;
-
-    void Awake()
+    // 각 파트의 초기 로컬 회전값 (상대적인 움직임을 위해 필요)
+    private Quaternion initSwingLocalRot;
+    private Quaternion initBoomLocalRot;
+    private Quaternion initArmLocalRot;
+    private Quaternion initBucketLocalRot;
+    
+    void Start()
     {
-        initSwingRot  = swing.localRotation;
-        initBoomRot   = boom.localRotation;
-        initArmRot    = arm.localRotation;
-        initBucketRot = bucket.localRotation;
+        // 각 굴착기 부품의 초기 로컬 회전값을 저장
+        initSwingLocalRot = swing.localRotation;
+        initBoomLocalRot = boom.localRotation;
+        initArmLocalRot = arm.localRotation;
+        initBucketLocalRot = bucket.localRotation;
+
+        // Start 시점에 각 실린더의 'rodLocalZ_Retracted' 값을
+        // 현재 로컬 위치로 자동 저장하는 옵션 (선택 사항, 인스펙터 수동 입력 권장)
+        // if (boomCylinder.pistonRod != null) boomCylinder.rodLocalZ_Retracted = boomCylinder.pistonRod.localPosition.z;
+        // if (armCylinder.pistonRod != null) armCylinder.rodLocalZ_Retracted = armCylinder.pistonRod.localPosition.z;
+        // if (bucketCylinder.pistonRod != null) bucketCylinder.rodLocalZ_Retracted = bucketCylinder.pistonRod.localPosition.z;
     }
 
     void Update()
     {
+        // 굴착기 암 입력 처리
         HandleInput();
-        ApplyRotations();
+        // 굴착기 암 회전 적용
+        ApplyRotation();
     }
 
-    private void HandleInput()
+    void HandleInput()
     {
         float dt = Time.deltaTime;
 
-        // Swing (Q/E)
+        // 스윙 (Q / E): 차체 좌우 회전
         if (Input.GetKey(KeyCode.Q)) swingAngle -= swingSpeed * dt;
         if (Input.GetKey(KeyCode.E)) swingAngle += swingSpeed * dt;
-        swingAngle = Mathf.Clamp(swingAngle, swingLimits.x, swingLimits.y);
+        swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
-        // Boom (W/S)
+        // 붐 (W / S): 주 팔 상하 회전
         if (Input.GetKey(KeyCode.W)) boomAngle += boomSpeed * dt;
         if (Input.GetKey(KeyCode.S)) boomAngle -= boomSpeed * dt;
-        boomAngle = Mathf.Clamp(boomAngle, boomLimits.x, boomLimits.y);
+        boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
-        // Arm (A/D)
+        // 암 (A / D): 보조 팔 상하 회전
         if (Input.GetKey(KeyCode.A)) armAngle += armSpeed * dt;
         if (Input.GetKey(KeyCode.D)) armAngle -= armSpeed * dt;
-        armAngle = Mathf.Clamp(armAngle, armLimits.x, armLimits.y);
+        armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
-        // Bucket (R/F)
+        // 버킷 (R / F): 버킷 회전
         if (Input.GetKey(KeyCode.R)) bucketAngle += bucketSpeed * dt;
         if (Input.GetKey(KeyCode.F)) bucketAngle -= bucketSpeed * dt;
-        bucketAngle = Mathf.Clamp(bucketAngle, bucketLimits.x, bucketLimits.y);
+        bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
     }
 
-    private void ApplyRotations()
+    void ApplyRotation()
     {
-        // Apply local rotations with initial offsets
-        swing.localRotation  = initSwingRot  * Quaternion.AngleAxis(swingAngle,  Vector3.forward);
-        boom.localRotation   = initBoomRot   * Quaternion.AngleAxis(boomAngle,   Vector3.up);
-        arm.localRotation    = initArmRot    * Quaternion.AngleAxis(armAngle,    Vector3.up);
-        bucket.localRotation = initBucketRot * Quaternion.AngleAxis(bucketAngle, Vector3.up);
+        // 각 부품에 계산된 회전 각도 적용 (초기 로컬 회전을 기준으로)
+        // Swing: Z축 (Vector3.forward) 기준 회전
+        swing.localRotation = initSwingLocalRot * Quaternion.AngleAxis(swingAngle, Vector3.forward);
+
+        // Boom: X축 (Vector3.right) 기준 회전
+        // 이 부분에서 비틀림이 있었다면, `Vector3.` 부분을 `Vector3.right`로 수정하면 됩니다.
+        boom.localRotation = initBoomLocalRot * Quaternion.AngleAxis(boomAngle, Vector3.right);
+
+        // Arm: Y축 (Vector3.up) 기준 회전
+        arm.localRotation = initArmLocalRot * Quaternion.AngleAxis(armAngle, Vector3.right);
+
+        // Bucket: Y축 (Vector3.up) 기준 회전
+        bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.right);
     }
 }
