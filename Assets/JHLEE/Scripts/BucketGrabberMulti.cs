@@ -1,121 +1,143 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages multiple grab zones on the bucket based on current mode (Idle, Dig, Dump).
+/// Handles particle grabbing and release, and terrain collision toggling.
+/// </summary>
 public class BucketGrabberMulti : MonoBehaviour
 {
-    public enum Mode { Idle = 0, Dig = 1, Dump = 2 }
+    public enum Mode { Idle, Dig, Dump }
 
-    [Header("Grab Zones (층별)")]
-    public Collider[] grabZones;       // 각 층별 Grab Zone
-    public int[]      zoneCapacities;  // 각 Zone 최대 용량
+    [Header("Grab Zones")]
+    [Tooltip("Colliders representing grab zones for each layer.")]
+    [SerializeField] private Collider[] grabZones;
+    [Tooltip("Max particle count per zone.")]
+    [SerializeField] private int[] zoneCapacities;
+    [Tooltip("Layer mask for soil particles to grab.")]
+    [SerializeField] private LayerMask soilLayer;
 
-    Mode             _mode = Mode.Idle;
-    Collider[]       _bucketCols;
-    TerrainCollider  _terrainCol;
-    List<Rigidbody>[] _grabbed;
-    int              _currentZone = 0;
-    bool             _grabbingEnabled = true;
+    [Header("Collision Settings")]
+    [Tooltip("Colliders on the bucket to ignore terrain collision.")]
+    [SerializeField] private Collider[] bucketColliders;
+    [Tooltip("TerrainCollider to toggle collision with.")]
+    [SerializeField] private TerrainCollider terrainCollider;
+
+    private Mode _mode = Mode.Idle;
+    private List<Rigidbody>[] _grabbed;
+    private int _currentZone = 0;
+    private bool _grabbingEnabled = true;
 
     public Mode CurrentMode => _mode;
 
     void Awake()
     {
-        // Grab Zone 초기화
-        int n = grabZones.Length;
-        _grabbed = new List<Rigidbody>[n];
-        for (int i = 0; i < n; i++)
+        int count = grabZones.Length;
+        _grabbed = new List<Rigidbody>[count];
+        for (int i = 0; i < count; i++)
         {
             _grabbed[i] = new List<Rigidbody>();
+            // Only enable initial zone
             grabZones[i].enabled = (i == 0);
-            var fwd = grabZones[i].gameObject.AddComponent<ZoneForwarder>();
-            fwd.Initialize(this, i);
+            // Attach forwarder
+            var forwarder = grabZones[i].gameObject.AddComponent<ZoneForwarder>();
+            forwarder.Initialize(this, i, soilLayer);
         }
-
-        // 충돌 무시 설정을 위해 버킷 콜라이더들 수집
-        _bucketCols = GetComponentsInChildren<Collider>();
-        _terrainCol = FindObjectOfType<TerrainDeformManager>()
-                          .GetComponent<TerrainCollider>();
+        // Ensure bucket colliders set
+        if (bucketColliders == null || bucketColliders.Length == 0)
+            bucketColliders = GetComponentsInChildren<Collider>();
     }
 
     /// <summary>
-    /// 외부에서 모드를 변경할 때 호출하세요.
+    /// Switch grab mode and update zone activation & collision.
     /// </summary>
     public void SetMode(Mode newMode)
     {
         if (newMode == _mode) return;
-        Mode old = _mode;
         _mode = newMode;
-        OnModeChanged(old, _mode);
-    }
 
-    void OnModeChanged(Mode from, Mode to)
-    {
-        // Dig 모드 전환 시 2~n층 Zone 비우기
-        if (to == Mode.Dig)  DetachZones(1);
-        // Dump 모드 전환 시 전체 비우기
-        if (to == Mode.Dump) DetachAllGrabbed();
+        // 0) 모드 전환 직전, 이전에 잡아둔 입자 떼어내기
+        if (newMode == Mode.Dig)
+            DetachZones(startZone: 1);    // Dig 모드로 전환할 땐 2~n층을 비움
+        else if (newMode == Mode.Dump)
+            DetachAllZones();              // Dump 모드로 전환할 땐 전체 비움
 
-        // Dig 모드일 때만 Terrain 충돌 무시
-        bool ignoreTerrain = (to == Mode.Dig);
-        foreach (var bc in _bucketCols)
-            Physics.IgnoreCollision(bc, _terrainCol, ignoreTerrain);
+        // 1) Terrain collision toggle
+        bool ignoreTerrain = (_mode == Mode.Dig);
+        foreach (var bc in bucketColliders)
+            Physics.IgnoreCollision(bc, terrainCollider, ignoreTerrain);
 
-        // Zone 활성화/비활성화
+        // 2) Grab Zone 활성화/비활성화
         for (int i = 0; i < grabZones.Length; i++)
             grabZones[i].enabled = false;
 
-        switch (to)
+        switch (_mode)
         {
             case Mode.Idle:
-                // 모든 Zone 활성화
+                _grabbingEnabled = true;
+                _currentZone     = 0;
                 for (int i = 0; i < grabZones.Length; i++)
                     grabZones[i].enabled = true;
-                _currentZone     = 0;
-                _grabbingEnabled = true;
                 break;
+
             case Mode.Dig:
-                // 1층 Zone만 활성화
-                grabZones[0].enabled = true;
-                _currentZone     = 0;
                 _grabbingEnabled = true;
-                break;
-            case Mode.Dump:
-                // Grab 기능 비활성화
                 _currentZone     = 0;
+                grabZones[0].enabled = true;
+                break;
+
+            case Mode.Dump:
                 _grabbingEnabled = false;
+                _currentZone     = 0;
+                // 아무 것도 켜지 않음
                 break;
         }
     }
 
-    public void Grab(int zoneIndex, GameObject soil)
+    private void EnableAllZones()
+    {
+        for (int i = 0; i < grabZones.Length; i++)
+            grabZones[i].enabled = true;
+    }
+
+    /// <summary>
+    /// Attempt to grab a soil particle into the specified zone.
+    /// </summary>
+    public void Grab(int zoneIndex, GameObject soilObj)
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
 
-        var rb  = soil.GetComponent<Rigidbody>();
-        var col = soil.GetComponent<Collider>();
-        if (rb == null || col == null) return;
+        // 태그로 판별
+        if (!soilObj.CompareTag("SoilParticle")) return;
 
-        // 입자 고정 및 부모로 이동
+        // Rigidbody & Collider 체크...
+        if (!soilObj.TryGetComponent<Rigidbody>(out var rb) ||
+            !soilObj.TryGetComponent<Collider>(out var col))
+            return;
+
+        // 나머지 로직 동일
         rb.isKinematic = true;
-        col.enabled     = false;
-        soil.transform.SetParent(grabZones[zoneIndex].transform, true);
-        soil.tag        = "SoilParticle";
+        col.enabled = false;
+        soilObj.transform.SetParent(grabZones[zoneIndex].transform, true);
         _grabbed[zoneIndex].Add(rb);
 
-        // 제한 용량 초과 시 다음 Zone 활성화
+        // If capacity reached, move to next zone
         if (_grabbed[zoneIndex].Count >= zoneCapacities[zoneIndex])
         {
             grabZones[zoneIndex].enabled = false;
             if (zoneIndex + 1 < grabZones.Length)
             {
-                _currentZone++;
+                _currentZone = zoneIndex + 1;
                 grabZones[_currentZone].enabled = true;
             }
-            else _grabbingEnabled = false;
+            else
+            {
+                _grabbingEnabled = false;
+            }
         }
     }
 
-    void DetachZones(int startZone)
+    private void DetachZones(int startZone)
     {
         for (int z = startZone; z < _grabbed.Length; z++)
         {
@@ -126,28 +148,36 @@ public class BucketGrabberMulti : MonoBehaviour
                 if (rb == null) { list.RemoveAt(i); continue; }
                 rb.isKinematic = false;
                 var col = rb.GetComponent<Collider>();
-                col.enabled     = true;
+                if (col) col.enabled = true;
                 rb.gameObject.tag = "Untagged";
-                rb.transform.SetParent(null, true);
+                rb.transform.SetParent(null, worldPositionStays: true);
                 list.RemoveAt(i);
             }
         }
     }
 
-    void DetachAllGrabbed() => DetachZones(0);
+    private void DetachAllZones() => DetachZones(startZone: 0);
 
-    class ZoneForwarder : MonoBehaviour
+    /// <summary>
+    /// Helper component forwarding trigger events to the main grabber.
+    /// </summary>
+    private class ZoneForwarder : MonoBehaviour
     {
-        BucketGrabberMulti _owner;
-        int                _zi;
-        public void Initialize(BucketGrabberMulti o, int zi)
+        private BucketGrabberMulti _owner;
+        private int _zoneIndex;
+        private LayerMask _soilLayer;
+
+        public void Initialize(BucketGrabberMulti owner, int zoneIndex, LayerMask soilLayer)
         {
-            _owner = o; _zi = zi;
+            _owner = owner;
+            _zoneIndex = zoneIndex;
+            _soilLayer = soilLayer;
         }
+
         void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("SoilParticle"))
-                _owner.Grab(_zi, other.gameObject);
+            if (((1 << other.gameObject.layer) & _soilLayer) != 0)
+                _owner.Grab(_zoneIndex, other.gameObject);
         }
     }
 }
