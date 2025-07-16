@@ -1,4 +1,4 @@
-/*using UnityEngine;
+using UnityEngine;
 
 public class ExcavatorController_KSMCopy : MonoBehaviour
 {
@@ -84,4 +84,4 @@ public class ExcavatorController_KSMCopy : MonoBehaviour
         // Bucket: Y축 (Vector3.up)
         bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.up);
     }
-}*/
+}
