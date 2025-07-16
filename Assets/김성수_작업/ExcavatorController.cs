@@ -59,24 +59,24 @@ public class ExcavatorController : MonoBehaviour
     {
         float dt = Time.deltaTime;
 
-        // 스윙 (Q / E): 차체 좌우 회전
-        if (Input.GetKey(KeyCode.Q)) swingAngle -= swingSpeed * dt;
-        if (Input.GetKey(KeyCode.E)) swingAngle += swingSpeed * dt;
+        // 스윙 (Q / E)
+        if (VirtualInput.Q) swingAngle -= swingSpeed * dt;
+        if (VirtualInput.E) swingAngle += swingSpeed * dt;
         swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
-        // 붐 (W / S): 주 팔 상하 회전
-        if (Input.GetKey(KeyCode.W)) boomAngle += boomSpeed * dt;
-        if (Input.GetKey(KeyCode.S)) boomAngle -= boomSpeed * dt;
+        // 붐 (W / S)
+        if (VirtualInput.W) boomAngle += boomSpeed * dt;
+        if (VirtualInput.S) boomAngle -= boomSpeed * dt;
         boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
-        // 암 (A / D): 보조 팔 상하 회전
-        if (Input.GetKey(KeyCode.A)) armAngle += armSpeed * dt;
-        if (Input.GetKey(KeyCode.D)) armAngle -= armSpeed * dt;
+        // 암 (A / D)
+        if (VirtualInput.A) armAngle += armSpeed * dt;
+        if (VirtualInput.D) armAngle -= armSpeed * dt;
         armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
-        // 버킷 (R / F): 버킷 회전
-        if (Input.GetKey(KeyCode.R)) bucketAngle += bucketSpeed * dt;
-        if (Input.GetKey(KeyCode.F)) bucketAngle -= bucketSpeed * dt;
+        // 버킷 (R / F)
+        if (VirtualInput.R) bucketAngle += bucketSpeed * dt;
+        if (VirtualInput.F) bucketAngle -= bucketSpeed * dt;
         bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
     }
 

@@ -470,7 +470,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 161840581799447588}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 14.344719, y: -0.0000023841858, z: 34.483337}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1308,7 +1308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463953511619641611}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.013891836, y: -0.30066708, z: 0.9535374, w: 0.01314524}
+  m_LocalRotation: {x: 0.0138917435, y: -0.300667, z: 0.9535374, w: 0.013145211}
   m_LocalPosition: {x: -0, y: -0.009630379, z: 0.000036888123}
   m_LocalScale: {x: 1, y: 0.99999994, z: 0.99999994}
   m_ConstrainProportionsScale: 0
@@ -10090,7 +10090,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3600379808479320930}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.017451696, y: -0.8850818, z: 0.4650178, w: 0.009169579}
+  m_LocalRotation: {x: 0.017451826, y: -0.8850819, z: 0.46501777, w: 0.009169827}
   m_LocalPosition: {x: -0, y: -0.0000044250487, z: 0.000008001327}
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_ConstrainProportionsScale: 0
@@ -17639,7 +17639,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 892761587154964250}
-  - component: {fileID: 8058404079648665063}
+  - component: {fileID: 7553531354133981737}
   m_Layer: 0
   m_Name: ExcavatorController
   m_TagString: Untagged
@@ -17662,7 +17662,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4256150840286075899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.355}
---- !u!114 &8058404079648665063
+--- !u!114 &7553531354133981737
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -17671,24 +17671,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 6069006368815857836}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3108a5dbc74c22e46bd97c4483dadc6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c3266c356e58c44f9e99a1fe9307b17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   swing: {fileID: 8228844601044399433}
-  boom: {fileID: 7279975949396412158}
+  boom: {fileID: 488136177763275114}
   arm: {fileID: 1953093851281064802}
   bucket: {fileID: 9021535966934684367}
   swingSpeed: 30
   boomSpeed: 30
   armSpeed: 30
   bucketSpeed: 30
-  minSwingAngle: -90
-  maxSwingAngle: 90
-  minBoomAngle: -45
-  maxBoomAngle: 45
-  minArmAngle: -90
+  minSwingAngle: -135
+  maxSwingAngle: 135
+  minBoomAngle: -20
+  maxBoomAngle: 40
+  minArmAngle: -10
   maxArmAngle: 90
-  minBucketAngle: -120
+  minBucketAngle: -30
   maxBucketAngle: 45
 --- !u!1 &6072248187634948987
 GameObject:
@@ -18156,7 +18156,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6253064797507224857}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.8221409, y: 0.016211255, z: 0.011217885, w: 0.5689427}
+  m_LocalRotation: {x: -0.8221408, y: 0.016211335, z: 0.011218061, w: 0.5689427}
   m_LocalPosition: {x: -3.7252902e-11, y: -0.00042943357, z: -0.007702956}
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_ConstrainProportionsScale: 0
@@ -21775,7 +21775,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7081787228738968108}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7779717, y: -0.025507145, z: 0.013815883, w: 0.62762934}
+  m_LocalRotation: {x: 0.7779719, y: -0.025507055, z: 0.013815835, w: 0.6276291}
   m_LocalPosition: {x: -3.7252902e-11, y: -0.030749248, z: 0.01063066}
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_ConstrainProportionsScale: 0
@@ -23310,7 +23310,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7542222635669664077}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.04078535, y: 0.9046329, z: 0.42321762, w: 0.029372262}
+  m_LocalRotation: {x: -0.040785346, y: 0.9046329, z: 0.42321762, w: 0.02937226}
   m_LocalPosition: {x: -0.0034578918, y: -0.022284353, z: 0.008632381}
   m_LocalScale: {x: -1, y: 1.0000001, z: 1.0000001}
   m_ConstrainProportionsScale: 0

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/김성수_작업/ExcavatorController.cs.meta
+guid: 3108a5dbc74c22e46bd97c4483dadc6b
+========
+guid: f9e7d4fa829dd9942bcbb3a45cf12d7a
+>>>>>>>> feature/VR연동:Assets/김승민_작업/Scripts/레버/KSM_ExcavatorController.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
