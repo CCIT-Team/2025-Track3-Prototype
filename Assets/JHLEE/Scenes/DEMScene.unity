@@ -264,6 +264,12 @@ Terrain:
     type: 3}
   m_PrefabInstance: {fileID: 2661426879609761825}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1269807051 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8793009517113452489, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
+    type: 3}
+  m_PrefabInstance: {fileID: 2135342607}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1496446424
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,13 +347,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1496446424}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 15.1, z: -29.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.14978486, y: -0.5505599, z: 0.21559183, w: 0.7924447}
+  m_LocalPosition: {x: 4.6200027, y: 4.560007, z: -1.0973707}
+  m_LocalScale: {x: 0.49999976, y: 0.5, z: 0.50000006}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 1269807051}
+  m_LocalEulerAnglesHint: {x: 28.345, y: 23.355, z: 11.586}
 --- !u!114 &1496446428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,6 +485,12 @@ PrefabInstance:
       propertyPath: deformManager
       value: 
       objectReference: {fileID: 1162167830}
+    - target: {fileID: 690062618889035213, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
+        type: 3}
+      propertyPath: dustVFXPrefab
+      value: 
+      objectReference: {fileID: 97370009020866654, guid: 3cb28cbc25013e94594fb8e175f05c22,
+        type: 3}
     - target: {fileID: 2486378223242013108, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
         type: 3}
       propertyPath: m_Size.x
@@ -562,7 +574,7 @@ PrefabInstance:
     - target: {fileID: 5950789051824955130, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: 300.5
       objectReference: {fileID: 0}
     - target: {fileID: 5950789051824955130, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
         type: 3}
@@ -638,6 +650,10 @@ PrefabInstance:
     - {fileID: 2486378223242013108, guid: 52a5ccdf9b183de46bfa1f23fecf1c24, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8793009517113452489, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
+        type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 1496446427}
     - targetCorrespondingSourceObject: {fileID: 3099600801023327802, guid: 52a5ccdf9b183de46bfa1f23fecf1c24,
         type: 3}
       insertIndex: -1
@@ -652,6 +668,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3282775679473002605, guid: eb7a1ba4096fb0946867b2a3c23a1270,
+        type: 3}
+      propertyPath: dustVFXPrefab
+      value: 
+      objectReference: {fileID: 97370009020866654, guid: 3cb28cbc25013e94594fb8e175f05c22,
+        type: 3}
     - target: {fileID: 4497449830462163166, guid: eb7a1ba4096fb0946867b2a3c23a1270,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -736,7 +758,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1496446427}
   - {fileID: 980029378}
   - {fileID: 2135342607}
   - {fileID: 2661426879609761825}
