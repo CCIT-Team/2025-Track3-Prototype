@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -27,29 +28,26 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
 
     private GameObjectPool _pool;
 
-    private TerrainLayer _layer;//?
+    private TerrainLayer _layer;
 
-    public void SetLayer(TerrainLayer layer)
-    {
-        _layer = layer;
-    }
-
-    public TerrainLayer GetLayer()
-    {
-        return _layer;
-    }
+    public void SetLayer(TerrainLayer layer) => _layer = layer;
+    public TerrainLayer GetLayer() => _layer;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _col = GetComponent<Collider>();
-        // Create and assign a PhysicMaterial for friction
-        var mat = new PhysicMaterial(name + "_PhysMat")
+
+        // Create and assign a PhysicMaterial for friction and zero bounce
+        var mat = new PhysicMaterial(name + "_SoilPhysMat")
         {
             staticFriction = staticFriction,
             dynamicFriction = dynamicFriction,
-            frictionCombine = frictionCombine
+            frictionCombine = frictionCombine,
+            bounciness = 0f,
+            bounceCombine = PhysicMaterialCombine.Minimum
         };
+
         _col.material = mat;
 
         _raiseManager = FindObjectOfType<TerrainRaiseManagerMerged>();
@@ -57,7 +55,6 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
 
     void Start()
     {
-        // Rigidbody 드래그 초기값
         _rb.drag = dynamicFriction;
         _rb.angularDrag = dynamicFriction;
     }
@@ -80,7 +77,6 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
             _rb.velocity = Vector3.zero;
             _rb.angularVelocity = Vector3.zero;
             _rb.isKinematic = true;
-            // 착지 즉시 멈춤 등록
             TryRegisterStop(surfaceY);
             _restTimer = 0f;
             return;
@@ -99,11 +95,8 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         else _restTimer = 0f;
     }
 
-    //정지 조건 감지 및 파괴
     private void TryRegisterStop(float surfaceY)
     {
-        float bottomY = _col.bounds.min.y + heightOffset;
-        // 무조건 등록만 하고, Destroy는 하지 않음
         if (_raiseManager != null)
             _raiseManager.RegisterStop(gameObject);
     }
@@ -126,8 +119,9 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         Vector3 velXZ = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
         if (downhillAccel < maxStaticAccel && velXZ.magnitude < restThreshold)
         {
-            // Freeze horizontal motion
-            _rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+            _rb.constraints = RigidbodyConstraints.FreezePositionX |
+                              RigidbodyConstraints.FreezePositionZ |
+                              RigidbodyConstraints.FreezeRotation;
         }
         else
         {
@@ -141,13 +135,6 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         _rb.constraints = RigidbodyConstraints.None;
     }
 
-    public void SetPoolInstance(GameObjectPool poolInstance)
-    {
-        _pool = poolInstance;
-    }
-
-    public bool ComparePoolInstance(GameObjectPool poolInstance)
-    {
-        return _pool == poolInstance;
-    }
+    public void SetPoolInstance(GameObjectPool poolInstance) => _pool = poolInstance;
+    public bool ComparePoolInstance(GameObjectPool poolInstance) => _pool == poolInstance;
 }

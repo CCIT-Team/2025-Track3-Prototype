@@ -5,6 +5,7 @@ using UnityEngine;
 /// - Flat baseline height
 /// - Copy heightmap from another Terrain
 /// - Reset painted textures to a single layer
+/// - Applies a high-friction PhysicMaterial to the TerrainCollider
 /// </summary>
 [RequireComponent(typeof(Terrain))]
 public class TerrainInitializerMerged : MonoBehaviour
@@ -28,12 +29,33 @@ public class TerrainInitializerMerged : MonoBehaviour
     [SerializeField] private int defaultTextureLayerIndex = 0;
 
     private Terrain _terrain;
+
+    [Header("Terrain Friction Settings")]
+    [Tooltip("Static friction for terrain collider (>=0)")]
+    [SerializeField, Min(0f)] private float terrainStaticFriction = 1f;
+    [Tooltip("Dynamic friction for terrain collider (>=0)")]
+    [SerializeField, Min(0f)] private float terrainDynamicFriction = 1f;
     private TerrainData _terrainData;
 
     void Awake()
     {
         _terrain = GetComponent<Terrain>();
         _terrainData = _terrain.terrainData;
+
+        // Assign high-friction PhysicMaterial to TerrainCollider
+        var tCol = _terrain.GetComponent<TerrainCollider>();
+        if (tCol != null)
+        {
+            var frictionMat = new PhysicMaterial("TerrainFrictionMat")
+            {
+                staticFriction = terrainStaticFriction,
+                dynamicFriction = terrainDynamicFriction,
+                frictionCombine = PhysicMaterialCombine.Maximum,
+                bounciness = 0f,
+                bounceCombine = PhysicMaterialCombine.Minimum
+            };
+            tCol.material = frictionMat;
+        }
     }
 
     void Start()
@@ -48,9 +70,6 @@ public class TerrainInitializerMerged : MonoBehaviour
             InitializeTextures();
     }
 
-    /// <summary>
-    /// Sets all heights to baselineNorm.
-    /// </summary>
     private void InitializeFlatHeight()
     {
         int res = _terrainData.heightmapResolution;
@@ -61,63 +80,44 @@ public class TerrainInitializerMerged : MonoBehaviour
         _terrainData.SetHeights(0, 0, heights);
     }
 
-    /// <summary>
-    /// Copies heightmap from sourceTerrain, respecting resolution differences.
-    /// </summary>
     private void CopySourceHeight()
     {
-        TerrainData srcData = sourceTerrain.terrainData;
-        int srcRes = srcData.heightmapResolution;
+        TerrainData src = sourceTerrain.terrainData;
+        int srcRes = src.heightmapResolution;
         int dstRes = _terrainData.heightmapResolution;
         int copyRes = Mathf.Min(srcRes, dstRes);
 
-        float[,] srcHeights = srcData.GetHeights(0, 0, copyRes, copyRes);
-
+        float[,] srcH = src.GetHeights(0, 0, copyRes, copyRes);
         if (copyRes != dstRes)
         {
-            float[,] fullHeights = new float[dstRes, dstRes];
-            // Copy source
+            float[,] full = new float[dstRes, dstRes];
             for (int z = 0; z < copyRes; z++)
                 for (int x = 0; x < copyRes; x++)
-                    fullHeights[z, x] = srcHeights[z, x];
-            // Fill rest with baseline
+                    full[z, x] = srcH[z, x];
             for (int z = copyRes; z < dstRes; z++)
                 for (int x = 0; x < dstRes; x++)
-                    fullHeights[z, x] = baselineNorm;
+                    full[z, x] = baselineNorm;
             for (int z = 0; z < copyRes; z++)
                 for (int x = copyRes; x < dstRes; x++)
-                    fullHeights[z, x] = baselineNorm;
-
-            _terrainData.SetHeights(0, 0, fullHeights);
+                    full[z, x] = baselineNorm;
+            _terrainData.SetHeights(0, 0, full);
         }
         else
         {
-            _terrainData.SetHeights(0, 0, srcHeights);
+            _terrainData.SetHeights(0, 0, srcH);
         }
     }
 
-    /// <summary>
-    /// Resets all splatmaps (texture weights) so that only one layer is painted.
-    /// </summary>
     private void InitializeTextures()
     {
         int alphaRes = _terrainData.alphamapResolution;
         int layerCount = _terrainData.terrainLayers.Length;
-
-        // Create an empty splatmap array
         float[,,] alphas = new float[alphaRes, alphaRes, layerCount];
 
-        // Assign full weight to the default layer
         for (int z = 0; z < alphaRes; z++)
-        {
             for (int x = 0; x < alphaRes; x++)
-            {
                 for (int l = 0; l < layerCount; l++)
-                {
                     alphas[z, x, l] = (l == defaultTextureLayerIndex) ? 1f : 0f;
-                }
-            }
-        }
 
         _terrainData.SetAlphamaps(0, 0, alphas);
     }

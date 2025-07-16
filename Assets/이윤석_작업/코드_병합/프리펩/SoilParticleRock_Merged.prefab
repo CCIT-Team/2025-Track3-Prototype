@@ -146,8 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79de2c73d53917446b3a39808392f9ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  staticFriction: 0.8
-  dynamicFriction: 0.9
+  staticFriction: 3
+  dynamicFriction: 3
   restThreshold: 0.05
   restTime: 0.5
   bakeRadius: 0.3

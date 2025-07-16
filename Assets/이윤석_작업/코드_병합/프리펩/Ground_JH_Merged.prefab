@@ -19,7 +19,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &4497449830462163166
 Transform:
@@ -108,6 +108,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94ad0b021eb4ac4ba52572e2069083e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _terrain: {fileID: 8246249363982604608}
+  _terrainData: {fileID: 15600000, guid: 916692afb70e4d246bcf417400d5dad4, type: 2}
+  maxCellsPerBatch: 1024
   _diggedTextureMin: 0
   _diggedTextureMax: 1
 --- !u!114 &7525259395100451313
@@ -150,3 +153,5 @@ MonoBehaviour:
   sourceTerrain: {fileID: 8246249363982604608}
   resetTextures: 1
   defaultTextureLayerIndex: 0
+  terrainStaticFriction: 3
+  terrainDynamicFriction: 3

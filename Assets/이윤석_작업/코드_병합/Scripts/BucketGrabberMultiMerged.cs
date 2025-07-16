@@ -3,28 +3,22 @@ using UnityEngine;
 
 public class BucketGrabberMultiMerged : MonoBehaviour
 {
+    public Mode CurrentMode => _mode;
     public enum Mode { Idle, Dig, Dump }
 
     [Header("Grab Zones")]
-    [Tooltip("Colliders representing grab zones for each layer.")]
     [SerializeField] private Collider[] grabZones;
-    [Tooltip("Max particle count per zone.")]
     [SerializeField] private int[] zoneCapacities;
-    [Tooltip("Layer mask for soil particles to grab.")]
     [SerializeField] private LayerMask soilLayer;
 
     [Header("Collision Settings")]
-    [Tooltip("Colliders on the bucket to ignore terrain collision.")]
     [SerializeField] private Collider[] bucketColliders;
-    [Tooltip("TerrainCollider to toggle collision with.")]
     [SerializeField] private TerrainCollider terrainCollider;
 
     private Mode _mode = Mode.Idle;
     private List<Rigidbody>[] _grabbed;
     private int _currentZone = 0;
     private bool _grabbingEnabled = true;
-
-    public Mode CurrentMode => _mode;
 
     void Awake()
     {
@@ -33,92 +27,50 @@ public class BucketGrabberMultiMerged : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             _grabbed[i] = new List<Rigidbody>();
-            // Only enable initial zone
             grabZones[i].enabled = (i == 0);
-            // Attach forwarder
             var forwarder = grabZones[i].gameObject.AddComponent<ZoneForwarderMerged>();
             forwarder.Initialize(this, i, soilLayer);
         }
-        // Ensure bucket colliders set
-        if (bucketColliders == null || bucketColliders.Length == 0)
-        {
-            var planeObj = GameObject.Find("plane.003");
-            if (planeObj != null)
-            {
-                // 단일 콜라이더라면 GetComponent, 여럿일 수도 있으므로 GetComponents
-                bucketColliders = planeObj.GetComponents<Collider>();
-            }
-        }
     }
 
-    /// <summary>
-    /// Switch grab mode and update zone activation & collision.
-    /// </summary>
     public void SetMode(Mode newMode)
     {
         if (newMode == _mode) return;
         _mode = newMode;
 
-        // 0) 모드 전환 직전, 이전에 잡아둔 입자 떼어내기
-        if (newMode == Mode.Dig)
-            DetachZones(startZone: 1);    // Dig 모드로 전환할 땐 2~n층을 비움
-        else if (newMode == Mode.Dump)
-            DetachAllZones();              // Dump 모드로 전환할 땐 전체 비움
+        // Soft detach on Dig (zones >0) and Dump (all zones)
+        if (_mode == Mode.Dig)
+            SoftDetachZones(1);
+        else if (_mode == Mode.Dump)
+            SoftDetachZones(0);
 
-        // 1) Terrain collision toggle
         bool ignoreTerrain = (_mode == Mode.Dig);
         foreach (var bc in bucketColliders)
             Physics.IgnoreCollision(bc, terrainCollider, ignoreTerrain);
 
-        // 2) Grab Zone 활성화/비활성화
         for (int i = 0; i < grabZones.Length; i++)
             grabZones[i].enabled = false;
 
-        switch (_mode)
-        {
-            case Mode.Idle:
-                _grabbingEnabled = true;
-                _currentZone     = 0;
-                for (int i = 0; i < grabZones.Length; i++)
-                    grabZones[i].enabled = true;
-                break;
-
-            case Mode.Dig:
-                _grabbingEnabled = true;
-                _currentZone     = 0;
-                grabZones[0].enabled = true;
-                break;
-
-            case Mode.Dump:
-                _grabbingEnabled = false;
-                _currentZone     = 0;
-                // 아무 것도 켜지 않음
-                break;
-        }
+        _grabbingEnabled = (_mode != Mode.Dump);
+        _currentZone = 0;
+        if (_mode == Mode.Idle)
+            for (int i = 0; i < grabZones.Length; i++)
+                grabZones[i].enabled = true;
+        else if (_mode == Mode.Dig)
+            grabZones[0].enabled = true;
     }
 
-    /// <summary>
-    /// Attempt to grab a soil particle into the specified zone.
-    /// </summary>
     public void Grab(int zoneIndex, GameObject soilObj)
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
-
-        // 태그로 판별
         if (!soilObj.CompareTag("SoilParticle")) return;
+        if (!soilObj.TryGetComponent<Rigidbody>(out var rb) || !soilObj.TryGetComponent<Collider>(out var col)) return;
 
-        // Rigidbody & Collider 체크...
-        if (!soilObj.TryGetComponent<Rigidbody>(out var rb) ||
-            !soilObj.TryGetComponent<Collider>(out var col))
-            return;
-
-        // 나머지 로직 동일
         rb.isKinematic = true;
         col.enabled = false;
         soilObj.transform.SetParent(grabZones[zoneIndex].transform, true);
         _grabbed[zoneIndex].Add(rb);
 
-        // If capacity reached, move to next zone
         if (_grabbed[zoneIndex].Count >= zoneCapacities[zoneIndex])
         {
             grabZones[zoneIndex].enabled = false;
@@ -128,13 +80,14 @@ public class BucketGrabberMultiMerged : MonoBehaviour
                 grabZones[_currentZone].enabled = true;
             }
             else
-            {
                 _grabbingEnabled = false;
-            }
         }
     }
 
-    private void DetachZones(int startZone)
+    /// <summary>
+    /// Allow particles to drop naturally under gravity without bouncing.
+    /// </summary>
+    private void SoftDetachZones(int startZone)
     {
         for (int z = startZone; z < _grabbed.Length; z++)
         {
@@ -143,38 +96,49 @@ public class BucketGrabberMultiMerged : MonoBehaviour
             {
                 var rb = list[i];
                 if (rb == null) { list.RemoveAt(i); continue; }
+
+                // Restore physics
                 rb.isKinematic = false;
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+
+                // Ensure collider has zero bounce
                 var col = rb.GetComponent<Collider>();
-                if (col) col.enabled = true;
-                rb.gameObject.tag = "Untagged";
-                rb.transform.SetParent(null, worldPositionStays: true);
+                if (col && col.material != null)
+                {
+                    col.material.bounciness = 0f;
+                    col.material.bounceCombine = PhysicMaterialCombine.Minimum;
+                }
+
+                // Detach from bucket hierarchy
+                rb.transform.SetParent(null, true);
                 list.RemoveAt(i);
             }
         }
     }
 
-    private void DetachAllZones() => DetachZones(startZone: 0);
-
-    /// <summary>
-    /// Helper component forwarding trigger events to the main grabber.
-    /// </summary>
     private class ZoneForwarderMerged : MonoBehaviour
     {
         private BucketGrabberMultiMerged _owner;
         private int _zoneIndex;
         private LayerMask _soilLayer;
+        private Collider _zoneCollider;
 
         public void Initialize(BucketGrabberMultiMerged owner, int zoneIndex, LayerMask soilLayer)
         {
             _owner = owner;
             _zoneIndex = zoneIndex;
             _soilLayer = soilLayer;
+            _zoneCollider = GetComponent<Collider>();
         }
 
-        void OnTriggerEnter(Collider other)
+        void OnTriggerStay(Collider other)
         {
             if (((1 << other.gameObject.layer) & _soilLayer) != 0)
-                _owner.Grab(_zoneIndex, other.gameObject);
+            {
+                if (_zoneCollider.bounds.Contains(other.transform.position))
+                    _owner.Grab(_zoneIndex, other.gameObject);
+            }
         }
     }
 }

@@ -44,10 +44,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
     public void RegisterStop(GameObject particle)
     {
         if (particle == null || _stopped.Contains(particle))
-        {
-
             return;
-        }
 
         _stopped.Add(particle);
     }
@@ -68,254 +65,174 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
         if (_stopped.Count == 0)
             return;
 
+        // 높이 맵 베이크
         BakeTerrainFromParticles();
-        //PaintTerrainFromParticles();
+        // 알파맵 페인팅
+        PaintTerrainFromParticles();
 
+        // 파티클 제거
         foreach (var go in _stopped)
         {
             if (go != null)
-            {
                 Destroy(go);
-                //_pool.ReturnGameObject(go);
-            }
         }
-                
-
         _stopped.Clear();
     }
-
-
 
     private void BakeTerrainFromParticles()
     {
         if (dustVFXPrefab != null && _stopped.Count > 0)
         {
-            Vector3 averagePos = Vector3.zero;
-            int validCount = 0;
+            Vector3 avg = Vector3.zero;
+            int cnt = 0;
             foreach (var go in _stopped)
+                if (go != null) { avg += go.transform.position; cnt++; }
+            if (cnt > 0)
             {
-                if (go != null)
-                {
-                    averagePos += go.transform.position;
-                    validCount++;
-                }
-            }
-
-            if (validCount > 0)
-            {
-                averagePos /= validCount;
-                Instantiate(dustVFXPrefab, averagePos, Quaternion.identity);
+                Instantiate(dustVFXPrefab, avg / cnt, Quaternion.identity);
             }
         }
 
         int res = _terrainData.heightmapResolution;
         float[,] heights = _terrainData.GetHeights(0, 0, res, res);
         Vector3 tPos = terrain.transform.position;
-        float mapSizeX = _terrainData.size.x;
-        float mapSizeZ = _terrainData.size.z;
-        float mapSizeY = _terrainData.size.y;
-        float cellSizeX = mapSizeX / (res - 1);
-        float cellSizeZ = mapSizeZ / (res - 1);
+        float sizeX = _terrainData.size.x;
+        float sizeZ = _terrainData.size.z;
+        float sizeY = _terrainData.size.y;
+        float cellX = sizeX / (res - 1);
+        float cellZ = sizeZ / (res - 1);
 
         var centers = new HashSet<Vector2Int>();
-
         foreach (var go in _stopped)
         {
             if (go == null) continue;
             var sp = go.GetComponent<SoilParticleMerged>();
-            float radius = sp?.bakeRadius ?? defaultBakeRadius;
+            float rad = sp?.bakeRadius ?? defaultBakeRadius;
             float centerY = go.transform.position.y + (sp?.heightOffset ?? defaultHeightOffset);
-            float normTarget = Mathf.Clamp01((centerY - tPos.y) / mapSizeY);
+            float normT = Mathf.Clamp01((centerY - tPos.y) / sizeY);
 
-            Vector3 localPos = go.transform.position - tPos;
-            int cx = Mathf.RoundToInt(localPos.x / mapSizeX * (res - 1));
-            int cz = Mathf.RoundToInt(localPos.z / mapSizeZ * (res - 1));
-
+            Vector3 local = go.transform.position - tPos;
+            int cx = Mathf.RoundToInt(local.x / sizeX * (res - 1));
+            int cz = Mathf.RoundToInt(local.z / sizeZ * (res - 1));
             centers.Add(new Vector2Int(cx, cz));
 
-            int rX = Mathf.CeilToInt(radius / cellSizeX);
-            int rZ = Mathf.CeilToInt(radius / cellSizeZ);
+            int rX = Mathf.CeilToInt(rad / cellX);
+            int rZ = Mathf.CeilToInt(rad / cellZ);
+            float rr = rad * rad;
 
             int x0 = Mathf.Clamp(cx - rX, 0, res - 1);
             int x1 = Mathf.Clamp(cx + rX, 0, res - 1);
             int z0 = Mathf.Clamp(cz - rZ, 0, res - 1);
             int z1 = Mathf.Clamp(cz + rZ, 0, res - 1);
 
-            float rr = radius * radius;
-
             for (int z = z0; z <= z1; z++)
+            for (int x = x0; x <= x1; x++)
             {
-                for (int x = x0; x <= x1; x++)
-                {
-                    float dx = (x - cx) * cellSizeX;
-                    float dz = (z - cz) * cellSizeZ;
-                    if (dx * dx + dz * dz > rr) continue;
-                    float cellY = heights[z, x] * mapSizeY + tPos.y;
-                    float dy = go.transform.position.y - cellY;
-                    if (dy * dy + dx * dx + dz * dz > rr) continue;
-                    if (heights[z, x] < normTarget) heights[z, x] = normTarget;
-                }
+                float dx = (x - cx) * cellX;
+                float dz = (z - cz) * cellZ;
+                if (dx*dx + dz*dz > rr) continue;
+                float cellY = heights[z, x] * sizeY + tPos.y;
+                if ((go.transform.position.y - cellY)*(go.transform.position.y - cellY) + dx*dx + dz*dz > rr) continue;
+                if (heights[z, x] < normT) heights[z, x] = normT;
             }
         }
-
-        foreach (var p in centers)
-            RelaxSlopeAround(heights, res, p.x, p.y, cellSizeX, cellSizeZ, mapSizeY);
+        foreach (var c in centers)
+            RelaxSlopeAround(heights, res, c.x, c.y, cellX, cellZ, sizeY);
 
         _terrainData.SetHeights(0, 0, heights);
     }
-
-    private void RelaxSlopeAround(float[,] heights, int res, int cx, int cz,
-                                    float cellSizeX, float cellSizeZ, float mapSizeY)
-    {
-        int radiusPx = Mathf.RoundToInt(relaxRadius / cellSizeX);
-        int x0 = Mathf.Clamp(cx - radiusPx, 1, res - 2);
-        int x1 = Mathf.Clamp(cx + radiusPx, 1, res - 2);
-        int z0 = Mathf.Clamp(cz - radiusPx, 1, res - 2);
-        int z1 = Mathf.Clamp(cz + radiusPx, 1, res - 2);
-
-        float maxSlope = Mathf.Tan(maxSlopeAngleDeg * Mathf.Deg2Rad);
-
-        for (int z = z0; z <= z1; z++)
-        {
-            for (int x = x0; x <= x1; x++)
-            {
-                float dz = (heights[z + 1, x] - heights[z - 1, x]) / (2 * cellSizeZ);
-                float dx = (heights[z, x + 1] - heights[z, x - 1]) / (2 * cellSizeX);
-                float slope = Mathf.Sqrt(dx * dx + dz * dz);
-
-                if (slope > maxSlope)
-                {
-                    float excess = slope - maxSlope;
-                    float reduce = excess * relaxStrength;
-
-                    heights[z, x] -= reduce;
-                    float disperse = reduce * 0.25f;
-                    heights[z + 1, x] += disperse;
-                    heights[z - 1, x] += disperse;
-                    heights[z, x + 1] += disperse;
-                    heights[z, x - 1] += disperse;
-                }
-            }
-        }
-
-        int w = x1 - x0 + 1, h = z1 - z0 + 1;
-        float[,] copy = new float[h, w];
-
-        for (int dz = 0; dz < h; dz++)
-            for (int dx = 0; dx < w; dx++)
-                copy[dz, dx] = heights[z0 + dz, x0 + dx];
-
-        for (int dz = 1; dz < h - 1; dz++)
-        {
-            for (int dx = 1; dx < w - 1; dx++)
-            {
-                float sum = 0f;
-                for (int oy = -1; oy <= 1; oy++)
-                    for (int ox = -1; ox <= 1; ox++)
-                        sum += copy[dz + oy, dx + ox];
-                heights[z0 + dz, x0 + dx] = sum / 9f;
-            }
-        }
-    }
-
-
-
-    private int GetLayerIndex(TerrainLayer target)
-    {
-        var layers = _terrainData.terrainLayers;
-        for (int i = 0; i < layers.Length; i++)
-        {
-            if (layers[i] == target)
-                return i;
-        }
-        return -1; // not found
-    }
-
-
-
 
     private void PaintTerrainFromParticles()
     {
         int res = _terrainData.alphamapResolution;
         int layers = _terrainData.alphamapLayers;
-
-        float[,,] alphamaps = _terrainData.GetAlphamaps(0, 0, res, res);
+        float[,,] am = _terrainData.GetAlphamaps(0, 0, res, res);
         Vector3 tPos = terrain.transform.position;
-
-        float mapSizeX = _terrainData.size.x;
-        float mapSizeZ = _terrainData.size.z;
-
-        float cellSizeX = mapSizeX / (res - 1);
-        float cellSizeZ = mapSizeZ / (res - 1);
+        float sizeX = _terrainData.size.x;
+        float sizeZ = _terrainData.size.z;
+        float cellX = sizeX / (res - 1);
+        float cellZ = sizeZ / (res - 1);
 
         foreach (var go in _stopped)
         {
             if (go == null) continue;
-
             var layer = go.GetComponent<SoilParticleMerged>()?.GetLayer();
             if (layer == null) continue;
-
-            int layerIndex = GetLayerIndex(layer);
-            if (layerIndex == -1) continue;
-
-            Vector3 localPos = go.transform.position - tPos;
-
-            int cx = Mathf.RoundToInt(localPos.x / mapSizeX * (res - 1));
-            int cz = Mathf.RoundToInt(localPos.z / mapSizeZ * (res - 1));
-
-            float radius = go.GetComponent<SoilParticleMerged>()?.bakeRadius ?? 0f;
-            radius *= 1.5f;
-            int rX = Mathf.CeilToInt(radius / cellSizeX);
-            int rZ = Mathf.CeilToInt(radius / cellSizeZ);
-
-            int x0 = Mathf.Clamp(cx - rX, 0, res - 1);
-            int x1 = Mathf.Clamp(cx + rX, 0, res - 1);
-            int z0 = Mathf.Clamp(cz - rZ, 0, res - 1);
-            int z1 = Mathf.Clamp(cz + rZ, 0, res - 1);
-
-            float rr = radius * radius;
-
-            for (int z = z0; z <= z1; z++)
+            int li = GetLayerIndex(layer);
+            if (li < 0) continue;
+            Vector3 local = go.transform.position - tPos;
+            int cx = Mathf.RoundToInt(local.x / sizeX * (res -1));
+            int cz = Mathf.RoundToInt(local.z / sizeZ * (res -1));
+            float rad = (go.GetComponent<SoilParticleMerged>()?.bakeRadius ?? 0f)*1.5f;
+            float rr = rad*rad;
+            int rX = Mathf.CeilToInt(rad/cellX);
+            int rZ = Mathf.CeilToInt(rad/cellZ);
+            int x0 = Mathf.Clamp(cx-rX,0,res-1);
+            int x1 = Mathf.Clamp(cx+rX,0,res-1);
+            int z0 = Mathf.Clamp(cz-rZ,0,res-1);
+            int z1 = Mathf.Clamp(cz+rZ,0,res-1);
+            for(int z=z0;z<=z1;z++)
+            for(int x=x0;x<=x1;x++)
             {
-                for (int x = x0; x <= x1; x++)
+                float dx=(x-cx)*cellX;
+                float dz=(z-cz)*cellZ;
+                float d2=dx*dx+dz*dz;
+                if(d2>rr) continue;
+                float t=(1f-Mathf.Sqrt(d2)/rad)*10f;
+                t=Mathf.Clamp01(t);
+                float sum=0f;
+                for(int l=0; l<layers; l++)
                 {
-                    float dx = (x - cx) * cellSizeX;
-                    float dz = (z - cz) * cellSizeZ;
-                    float distSqr = dx * dx + dz * dz;
-                    if (distSqr > rr) continue;
-
-                    float t = (1.0f - Mathf.Sqrt(distSqr) / radius) * 10; // 수정됨
-                    t = Mathf.Clamp01(t);
-
-                    float sum = 0f;
-                    for (int l = 0; l < layers; l++)
-                    {
-                        if (l == layerIndex)
-                            alphamaps[z, x, l] = Mathf.Lerp(alphamaps[z, x, l], 1.0f, t);
-                        else
-                            alphamaps[z, x, l] = Mathf.Lerp(alphamaps[z, x, l], 0.0f, t);
-
-                        sum += alphamaps[z, x, l];
-                    }
-
-                    // Normalize weights to sum to 1
-                    for (int l = 0; l < layers; l++)
-                        alphamaps[z, x, l] /= sum;
+                    if(l==li) am[z,x,l]=Mathf.Lerp(am[z,x,l],1f,t);
+                    else am[z,x,l]=Mathf.Lerp(am[z,x,l],0f,t);
+                    sum+=am[z,x,l];
                 }
+                for(int l=0;l<layers;l++) am[z,x,l]/=sum;
             }
         }
-
-        _terrainData.SetAlphamaps(0, 0, alphamaps);
+        _terrainData.SetAlphamaps(0,0,am);
     }
-    
-    public void SetPoolInstance(GameObjectPool poolInstance)
+
+    private void RelaxSlopeAround(float[,] heights,int res,int cx,int cz,float cellX,float cellZ,float sizeY)
     {
-        _pool = poolInstance;
+        int rp=Mathf.RoundToInt(relaxRadius/cellX);
+        int x0=Mathf.Clamp(cx-rp,1,res-2);
+        int x1=Mathf.Clamp(cx+rp,1,res-2);
+        int z0=Mathf.Clamp(cz-rp,1,res-2);
+        int z1=Mathf.Clamp(cz+rp,1,res-2);
+        float maxSl=Mathf.Tan(maxSlopeAngleDeg*Mathf.Deg2Rad);
+        for(int z=z0;z<=z1;z++) for(int x=x0;x<=x1;x++)
+        {
+            float dz=(heights[z+1,x]-heights[z-1,x])/(2*cellZ);
+            float dx=(heights[z,x+1]-heights[z,x-1])/(2*cellX);
+            float slope=Mathf.Sqrt(dx*dx+dz*dz);
+            if(slope>maxSl)
+            {
+                float ex=slope-maxSl;
+                float rd=ex*relaxStrength;
+                heights[z,x]-=rd;
+                float disp=rd*0.25f;
+                heights[z+1,x]+=disp;heights[z-1,x]+=disp;heights[z,x+1]+=disp;heights[z,x-1]+=disp;
+            }
+        }
+        int w=x1-x0+1,h=z1-z0+1;
+        float[,] copy=new float[h,w];
+        for(int dz=0;dz<h;dz++)for(int dx=0;dx<w;dx++) copy[dz,dx]=heights[z0+dz,x0+dx];
+        for(int dz=1;dz<h-1;dz++) for(int dx=1;dx<w-1;dx++)
+        {
+            float sum=0f;
+            for(int oy=-1;oy<=1;oy++)for(int ox=-1;ox<=1;ox++) sum+=copy[dz+oy,dx+ox];
+            heights[z0+dz,x0+dx]=sum/9f;
+        }
     }
 
-    public bool ComparePoolInstance(GameObjectPool poolInstance)
+    private int GetLayerIndex(TerrainLayer target)
     {
-        return _pool == poolInstance;
+        var ls=_terrainData.terrainLayers;
+        for(int i=0;i<ls.Length;i++) if(ls[i]==target) return i;
+        return -1;
     }
 
+    public void SetPoolInstance(GameObjectPool pool) { _pool=pool;}    
+    public bool ComparePoolInstance(GameObjectPool pool) { return _pool==pool; }
 }
