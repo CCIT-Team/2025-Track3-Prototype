@@ -1,43 +1,49 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 입자들이 쌓인 형태를 깊이(bakeRadius)를 가진 구 형태로 Terrain에 베이크하는 매니저.
-/// SoilParticle에서 RegisterStop()으로 모은 입자를, autoBakeInterval이 지나면 자동으로 처리합니다.
-/// </summary>
+[RequireComponent(typeof(Terrain))]
 public class TerrainRaiseManager : MonoBehaviour
 {
-    [Header("Terrain 참조")]
+    [Header("Terrain Reference")]
     [SerializeField] private Terrain terrain;
 
-    [Header("자동 Bake 설정")]
-    public bool autoBakeEnabled = true;
-    public float autoBakeInterval = 5f; // 초 단위
-    private float _bakeTimer = 0f;
+    [Header("Bake Settings")]
+    [SerializeField] private bool autoBakeEnabled = true;
+    [SerializeField] private float autoBakeInterval = 5f;
+
+    [Header("Particle Bake Defaults")]
+    [SerializeField] private float defaultBakeRadius = 0.5f;
+    [SerializeField] private float defaultHeightOffset = 0.3f;
+
+    [Header("Slope Relaxation Settings")]
+    [SerializeField] private float relaxRadius = 2f;
+    [SerializeField] private float maxSlopeAngleDeg = 35f;
+    [SerializeField] private float relaxStrength = 0.01f;
 
     private TerrainData _terrainData;
     private TerrainCollider _terrainCollider;
     private List<GameObject> _stopped = new List<GameObject>();
+    private float _bakeTimer = 0f;
 
     void Awake()
     {
-        if (terrain == null)
-            terrain = Terrain.activeTerrain;
+        if (terrain == null) terrain = Terrain.activeTerrain;
         _terrainData = terrain.terrainData;
         _terrainCollider = terrain.GetComponent<TerrainCollider>();
     }
 
-    /// <summary> SoilParticle에서 호출: 입자가 지형에 정착된 위치를 등록 </summary>
     public void RegisterStop(GameObject particle)
     {
-        if (particle != null && !_stopped.Contains(particle))
-            _stopped.Add(particle);
+        if (particle == null || _stopped.Contains(particle)) 
+            return;
+
+        // 단순히 리스트에 추가만!
+        _stopped.Add(particle);
     }
 
     void Update()
     {
         if (!autoBakeEnabled) return;
-
         _bakeTimer += Time.deltaTime;
         if (_bakeTimer >= autoBakeInterval)
         {
@@ -46,82 +52,48 @@ public class TerrainRaiseManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 등록된 입자들로부터 Terrain에 베이크하고, 입자 오브젝트를 제거합니다.
-    /// Collider 비활성화와 Rigidbody 동결로 튀어오름을 방지합니다.
-    /// </summary>
     private void BakeAndClearParticles()
     {
-        if (_stopped.Count == 0) return;
+        if (_stopped.Count == 0) 
+            return;
 
-        // 1) TerrainCollider 비활성화
-        if (_terrainCollider != null)
-            _terrainCollider.enabled = false;
-
-        // 2) 입자 물리 정지: Collider 비활성, Rigidbody 제약만 설정
-        foreach (var go in _stopped)
-        {
-            if (go == null) continue;
-            foreach (var col in go.GetComponentsInChildren<Collider>())
-                col.enabled = false;
-
-            var rb = go.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                // 이미 kinematic 상태가 아니면 속도 초기화
-                if (!rb.isKinematic)
-                {
-                    rb.velocity        = Vector3.zero;
-                    rb.angularVelocity = Vector3.zero;
-                }
-                // 그 다음 kinematic 전환 및 완전 동결
-                rb.isKinematic = true;
-                rb.constraints = RigidbodyConstraints.FreezeAll;
-            }
-        }
-
-        // 3) Terrain 베이크
+        // 1) Terrain 베이크만 수행
         BakeTerrainFromParticles();
 
-        // 4) TerrainCollider 재활성화
-        if (_terrainCollider != null)
-            _terrainCollider.enabled = true;
-
-        // 5) 입자 제거 및 리스트 초기화
+        // 2) 베이크된 입자 일괄 파괴
         foreach (var go in _stopped)
-            if (go != null) Destroy(go);
+            if (go != null)
+                Destroy(go);
+
         _stopped.Clear();
     }
 
-    /// <summary>
-    /// 등록된 모든 입자를 순회하며, 입자 중심을 중심으로 구 형태(bakeRadius) 범위 내의 heightmap 셀을
-    /// 입자 중심 높이로 맞춥니다.
-    /// </summary>
     private void BakeTerrainFromParticles()
     {
         int res = _terrainData.heightmapResolution;
         float[,] heights = _terrainData.GetHeights(0, 0, res, res);
         Vector3 tPos = terrain.transform.position;
-
         float mapSizeX = _terrainData.size.x;
         float mapSizeZ = _terrainData.size.z;
         float mapSizeY = _terrainData.size.y;
         float cellSizeX = mapSizeX / (res - 1);
         float cellSizeZ = mapSizeZ / (res - 1);
 
+        var centers = new HashSet<Vector2Int>();
+
         foreach (var go in _stopped)
         {
             if (go == null) continue;
-            Vector3 worldPos = go.transform.position;
-
             var sp = go.GetComponent<SoilParticle>();
-            float radius = sp != null ? sp.bakeRadius : 0f;
-            float centerY = worldPos.y + (sp != null ? sp.heightOffset : 0f);
+            float radius = sp?.bakeRadius ?? defaultBakeRadius;
+            float centerY = go.transform.position.y + (sp?.heightOffset ?? defaultHeightOffset);
             float normTarget = Mathf.Clamp01((centerY - tPos.y) / mapSizeY);
 
-            Vector3 localPos = worldPos - tPos;
+            Vector3 localPos = go.transform.position - tPos;
             int cx = Mathf.RoundToInt(localPos.x / mapSizeX * (res - 1));
             int cz = Mathf.RoundToInt(localPos.z / mapSizeZ * (res - 1));
+
+            centers.Add(new Vector2Int(cx, cz));
 
             int rX = Mathf.CeilToInt(radius / cellSizeX);
             int rZ = Mathf.CeilToInt(radius / cellSizeZ);
@@ -134,21 +106,80 @@ public class TerrainRaiseManager : MonoBehaviour
             float rr = radius * radius;
 
             for (int z = z0; z <= z1; z++)
+            {
                 for (int x = x0; x <= x1; x++)
                 {
                     float dx = (x - cx) * cellSizeX;
                     float dz = (z - cz) * cellSizeZ;
                     if (dx * dx + dz * dz > rr) continue;
-
                     float cellY = heights[z, x] * mapSizeY + tPos.y;
-                    float dy = worldPos.y - cellY;
+                    float dy = go.transform.position.y - cellY;
                     if (dy * dy + dx * dx + dz * dz > rr) continue;
-
-                    if (heights[z, x] < normTarget)
-                        heights[z, x] = normTarget;
+                    if (heights[z, x] < normTarget) heights[z, x] = normTarget;
                 }
+            }
+
         }
 
+        foreach (var p in centers)
+            RelaxSlopeAround(heights, res, p.x, p.y, cellSizeX, cellSizeZ, mapSizeY);
+
         _terrainData.SetHeights(0, 0, heights);
+    }
+
+    private void RelaxSlopeAround(float[,] heights, int res, int cx, int cz,
+                                   float cellSizeX, float cellSizeZ, float mapSizeY)
+    {
+        int radiusPx = Mathf.RoundToInt(relaxRadius / cellSizeX);
+        int x0 = Mathf.Clamp(cx - radiusPx, 1, res - 2);
+        int x1 = Mathf.Clamp(cx + radiusPx, 1, res - 2);
+        int z0 = Mathf.Clamp(cz - radiusPx, 1, res - 2);
+        int z1 = Mathf.Clamp(cz + radiusPx, 1, res - 2);
+
+        float maxSlope = Mathf.Tan(maxSlopeAngleDeg * Mathf.Deg2Rad);
+
+        for (int z = z0; z <= z1; z++)
+        {
+            for (int x = x0; x <= x1; x++)
+            {
+                float dz = (heights[z + 1, x] - heights[z - 1, x]) / (2 * cellSizeZ);
+                float dx = (heights[z, x + 1] - heights[z, x - 1]) / (2 * cellSizeX);
+                float slope = Mathf.Sqrt(dx * dx + dz * dz);
+
+                if (slope > maxSlope)
+                {
+                    float excess = slope - maxSlope;
+                    float reduce = excess * relaxStrength;
+
+                    heights[z, x] -= reduce;
+                    float disperse = reduce * 0.25f;
+                    heights[z + 1, x] += disperse;
+                    heights[z - 1, x] += disperse;
+                    heights[z, x + 1] += disperse;
+                    heights[z, x - 1] += disperse;
+                }
+            }
+        }
+
+        // ─── 추가: 박스 블러 (3×3) ───
+        int w = x1 - x0 + 1, h = z1 - z0 + 1;
+        float[,] copy = new float[h, w];
+        // 원본 영역 복사
+        for (int dz = 0; dz < h; dz++)
+            for (int dx = 0; dx < w; dx++)
+                copy[dz, dx] = heights[z0 + dz, x0 + dx];
+
+        // 블러 적용
+        for (int dz = 1; dz < h - 1; dz++)
+        {
+            for (int dx = 1; dx < w - 1; dx++)
+            {
+                float sum = 0f;
+                for (int oy = -1; oy <= 1; oy++)
+                    for (int ox = -1; ox <= 1; ox++)
+                        sum += copy[dz + oy, dx + ox];
+                heights[z0 + dz, x0 + dx] = sum / 9f;
+            }
+        }
     }
 }
