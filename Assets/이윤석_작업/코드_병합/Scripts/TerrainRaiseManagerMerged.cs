@@ -18,6 +18,10 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
     [SerializeField] private float defaultBakeRadius = 0.5f;
     [SerializeField] private float defaultHeightOffset = 0.3f;
 
+    [Header("VFX Settings")]
+    [Tooltip("흙이 쌓일 때 생성될 먼지 효과 프리팹")]
+    [SerializeField] private GameObject dustVFXPrefab;
+
     [Header("Slope Relaxation Settings")]
     [SerializeField] private float relaxRadius = 2f;
     [SerializeField] private float maxSlopeAngleDeg = 35f;
@@ -41,10 +45,10 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
     {
         if (particle == null || _stopped.Contains(particle))
         {
+
             return;
         }
 
-        // 단순히 리스트에 추가만!
         _stopped.Add(particle);
     }
 
@@ -64,11 +68,9 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
         if (_stopped.Count == 0)
             return;
 
-        // 1) Terrain 베이크만 수행
         BakeTerrainFromParticles();
         PaintTerrainFromParticles();
 
-        // 2) 베이크된 입자 일괄 파괴
         foreach (var go in _stopped)
         {
             if (go != null)
@@ -82,8 +84,30 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
         _stopped.Clear();
     }
 
+
+
     private void BakeTerrainFromParticles()
     {
+        if (dustVFXPrefab != null && _stopped.Count > 0)
+        {
+            Vector3 averagePos = Vector3.zero;
+            int validCount = 0;
+            foreach (var go in _stopped)
+            {
+                if (go != null)
+                {
+                    averagePos += go.transform.position;
+                    validCount++;
+                }
+            }
+
+            if (validCount > 0)
+            {
+                averagePos /= validCount;
+                Instantiate(dustVFXPrefab, averagePos, Quaternion.identity);
+            }
+        }
+
         int res = _terrainData.heightmapResolution;
         float[,] heights = _terrainData.GetHeights(0, 0, res, res);
         Vector3 tPos = terrain.transform.position;
@@ -132,7 +156,6 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
                     if (heights[z, x] < normTarget) heights[z, x] = normTarget;
                 }
             }
-
         }
 
         foreach (var p in centers)
@@ -142,7 +165,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
     }
 
     private void RelaxSlopeAround(float[,] heights, int res, int cx, int cz,
-                                   float cellSizeX, float cellSizeZ, float mapSizeY)
+                                    float cellSizeX, float cellSizeZ, float mapSizeY)
     {
         int radiusPx = Mathf.RoundToInt(relaxRadius / cellSizeX);
         int x0 = Mathf.Clamp(cx - radiusPx, 1, res - 2);
@@ -175,15 +198,13 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
             }
         }
 
-        // ─── 추가: 박스 블러 (3×3) ───
         int w = x1 - x0 + 1, h = z1 - z0 + 1;
         float[,] copy = new float[h, w];
-        // 원본 영역 복사
+
         for (int dz = 0; dz < h; dz++)
             for (int dx = 0; dx < w; dx++)
                 copy[dz, dx] = heights[z0 + dz, x0 + dx];
 
-        // 블러 적용
         for (int dz = 1; dz < h - 1; dz++)
         {
             for (int dx = 1; dx < w - 1; dx++)

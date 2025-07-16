@@ -40,6 +40,12 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     /////////////////////////////////////
 
 
+    [Header("VFX Settings")]
+    [Tooltip("굴착 시 생성될 먼지 효과 프리팹")]
+    [SerializeField] private GameObject dustVFXPrefab;
+    [Tooltip("먼지 효과 생성 주기 (초)")]
+    [SerializeField] private float vfxCooldown = 0.5f;
+
     [Header("References")]
     [Tooltip("TerrainDeformManager to delegate terrain modifications.")]
     [SerializeField] private TerrainDeformManagerMerged deformManager;
@@ -53,6 +59,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     private Collider _col;
     private TerrainCollider _terrainCollider;
     private float _particleAccumulator;
+    private float nextVfxTime = 0f;
 
     public bool isDigging { get; private set; }
 
@@ -118,9 +125,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
             return;
 
         float deltaVol = excavateRate * Time.fixedDeltaTime;
-        // ─── penetration 계산 ───
-        // bladeCollider.bounds 의 네 귀퉁이 Y값을 모두 샘플링해서
-        // 지형보다 아래로 얼마나 내려갔는지 가장 큰 값을 골라냅니다.
+
         Vector3 tPos = terrain.transform.position;
         Vector3[] corners = new Vector3[4]
         {
@@ -135,11 +140,11 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
             float groundY = terrain.SampleHeight(c) + tPos.y;
             penetration = Mathf.Max(penetration, groundY - c.y);
         }
-        penetration = Mathf.Max(0f, penetration);  // 음수 제거
+        penetration = Mathf.Max(0f, penetration);
 
-        // ─── LowerRectAABB 호출 ───
         float carved = deformManager.LowerRectAABB(bb.min, bb.max, deltaVol, penetration);
         deformManager.PaintTexture(bb.min, bb.max, _diggedLayerTexture, _diggedLayerWeight);
+
         SpawnParticles(carved, bb);
     }
 
@@ -187,7 +192,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
             float x = Random.Range(bb.min.x, bb.max.x);
             float z = Random.Range(bb.min.z, bb.max.z);
             float y = terrain.SampleHeight(new Vector3(x, 0f, z))
-                      + terrain.transform.position.y + 0.5f;
+                        + terrain.transform.position.y + 0.5f;
             var go = Instantiate(soilPrefab, new Vector3(x, y, z), Quaternion.identity);
             // var go = _pool.GetGameObject();
             // go.transform.position = new Vector3(x, y, z);
