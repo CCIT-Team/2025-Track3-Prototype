@@ -13,6 +13,7 @@ public class KSM_TrackWheel : MonoBehaviour
 
     public Rigidbody body;           // 속도 측정을 위한 몸체
 
+
     void FixedUpdate()
     {
         // 현재 속도 계산
@@ -22,6 +23,8 @@ public class KSM_TrackWheel : MonoBehaviour
         // 키 입력 처리
         float leftInput = VirtualInput.T ? 1 : VirtualInput.G ? -1 : 0;
         float rightInput = VirtualInput.U ? 1 : VirtualInput.J ? -1 : 0;
+
+        Debug.Log($"T : {VirtualInput.T}, G : {VirtualInput.G}");
 
         // 왼쪽 바퀴 처리
         foreach (WheelCollider wc in leftWheels)

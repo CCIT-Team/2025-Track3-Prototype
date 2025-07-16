@@ -30,9 +30,9 @@ public class LBottomLever : MonoBehaviour
         var constrainedAxisY = new TransformerUtils.ConstrainedAxis();
         var constrainedAxisZ = new TransformerUtils.ConstrainedAxis();
 
-        constrainedAxisX.ConstrainAxis = false;
-        constrainedAxisY.ConstrainAxis = false;
-        constrainedAxisZ.ConstrainAxis = false;
+        constrainedAxisX.ConstrainAxis = true;
+        constrainedAxisY.ConstrainAxis = true;
+        constrainedAxisZ.ConstrainAxis = true;
 
         constrainedAxisX.AxisRange = rangeX;
         constrainedAxisY.AxisRange = rangeY;
@@ -49,8 +49,8 @@ public class LBottomLever : MonoBehaviour
 
         if (x > 180f) x -= 360f;
 
-        VirtualInput.T = x < -threshold;
+        VirtualInput.G = x < -threshold;
 
-        VirtualInput.G = x > threshold;
+        VirtualInput.T = x > threshold;
     }
 }

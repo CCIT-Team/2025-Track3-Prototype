@@ -30,9 +30,9 @@ public class RBottomLever : MonoBehaviour
         var constrainedAxisY = new TransformerUtils.ConstrainedAxis();
         var constrainedAxisZ = new TransformerUtils.ConstrainedAxis();
 
-        constrainedAxisX.ConstrainAxis = false;
-        constrainedAxisY.ConstrainAxis = false;
-        constrainedAxisZ.ConstrainAxis = false;
+        constrainedAxisX.ConstrainAxis = true;
+        constrainedAxisY.ConstrainAxis = true;
+        constrainedAxisZ.ConstrainAxis = true;
 
         constrainedAxisX.AxisRange = rangeX;
         constrainedAxisY.AxisRange = rangeY;
@@ -48,8 +48,8 @@ public class RBottomLever : MonoBehaviour
         float x = RCrawl.localEulerAngles.x;
         if (x > 180f) x -= 360f;
 
-        VirtualInput.U = x < -threshold;
+        VirtualInput.J = x < -threshold;
 
-        VirtualInput.J = x > threshold;
+        VirtualInput.U = x > threshold;
     }
 }
