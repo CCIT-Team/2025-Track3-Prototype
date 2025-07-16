@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class BucketController : MonoBehaviour
@@ -168,4 +168,4 @@ public class BucketController : MonoBehaviour
                 rb.mass = 0.1f;
         }
     }
-}
+}*/

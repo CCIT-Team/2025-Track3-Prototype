@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Terrain))]
@@ -202,4 +202,4 @@ public class TerrainRaiseManager : MonoBehaviour
             }
         }
     }
-}
+}*/

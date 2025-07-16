@@ -88,7 +88,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
 
     private void BakeTerrainFromParticles()
     {
-        if (dustVFXPrefab != null && _stopped.Count > 0)
+        /*if (dustVFXPrefab != null && _stopped.Count > 0)
         {
             Vector3 averagePos = Vector3.zero;
             int validCount = 0;
@@ -106,7 +106,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
                 averagePos /= validCount;
                 Instantiate(dustVFXPrefab, averagePos, Quaternion.identity);
             }
-        }
+        }*/
 
         int res = _terrainData.heightmapResolution;
         float[,] heights = _terrainData.GetHeights(0, 0, res, res);

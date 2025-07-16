@@ -52,7 +52,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     [Tooltip("Terrain used for height sampling.")]
     [SerializeField] private Terrain terrain;
     [Tooltip("Controller providing bucketAngle.")]
-    [SerializeField] private ExcavatorController_publicMerged excavatorController;
+    [SerializeField] private ExcavatorController excavatorController;
     private BucketGrabberMultiMerged _modeCtrl;
 
     private Rigidbody _rb;
@@ -106,9 +106,9 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
         // ExcavatorController 할당 여부 확인
         if (excavatorController == null)
         {
-            excavatorController = FindObjectOfType<ExcavatorController_publicMerged>();
+            excavatorController = FindObjectOfType<ExcavatorController>();
             if (excavatorController == null)
-                Debug.LogError("[BucketController] ExcavatorController_public not found in scene or inspector");
+                Debug.LogError("[BucketController] ExcavatorController not found in scene or inspector");
         }
     }
 
@@ -145,6 +145,12 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
         float carved = deformManager.LowerRectAABB(bb.min, bb.max, deltaVol, penetration);
         deformManager.PaintTexture(bb.min, bb.max, _diggedLayerTexture, _diggedLayerWeight);
 
+        /*if (carved > 0f && dustVFXPrefab != null && Time.time >= nextVfxTime)
+        {
+            nextVfxTime = Time.time + vfxCooldown;
+            Instantiate(dustVFXPrefab, bb.center, Quaternion.identity);
+        }*/
+
         SpawnParticles(carved, bb);
     }
 
@@ -152,7 +158,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     {
         if (excavatorController == null || _modeCtrl == null) return;
 
-        float angle = excavatorController.BucketAngle;
+        float angle = excavatorController.bucketAngle;
         var desired = BucketGrabberMultiMerged.Mode.Idle;
 
         if (angle >= dumpMinAngle && angle < dumpMaxAngle)

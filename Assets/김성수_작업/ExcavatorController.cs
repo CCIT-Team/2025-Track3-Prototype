@@ -24,7 +24,7 @@ public class ExcavatorController : MonoBehaviour
     private float swingAngle = 0f;
     private float boomAngle = 0f;
     private float armAngle = 0f;
-    private float bucketAngle = 0f;
+    public float bucketAngle = 0f;
 
     // 각 파트의 초기 로컬 회전값 (상대적인 움직임을 위해 필요)
     private Quaternion initSwingLocalRot;
