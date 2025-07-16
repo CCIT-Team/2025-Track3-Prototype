@@ -73,8 +73,8 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
         {
             if (go != null)
             {
-                //Destroy(go);
-                _pool.ReturnGameObject(go);
+                Destroy(go);
+                //_pool.ReturnGameObject(go);
             }
         }
                 

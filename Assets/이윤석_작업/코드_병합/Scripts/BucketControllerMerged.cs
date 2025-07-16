@@ -188,9 +188,9 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
             float z = Random.Range(bb.min.z, bb.max.z);
             float y = terrain.SampleHeight(new Vector3(x, 0f, z))
                       + terrain.transform.position.y + 0.5f;
-            //var go = Instantiate(soilPrefab, new Vector3(x, y, z), Quaternion.identity);
-            _pool.SetInitialSpawnPoint(new Vector3(x,y+1f,z));
-            var go = _pool.GetGameObject();
+            var go = Instantiate(soilPrefab, new Vector3(x, y, z), Quaternion.identity);
+            // var go = _pool.GetGameObject();
+            // go.transform.position = new Vector3(x, y, z);
             if (go.TryGetComponent<Rigidbody>(out var rb))
             {
                 rb.mass = 0.1f;
