@@ -50,23 +50,23 @@ public class ExcavatorController : MonoBehaviour
         float dt = Time.deltaTime;
 
         // 스윙 (Q / E)
-        if (Input.GetKey(KeyCode.Q)) swingAngle -= swingSpeed * dt;
-        if (Input.GetKey(KeyCode.E)) swingAngle += swingSpeed * dt;
+        if (VirtualInput.Q) swingAngle -= swingSpeed * dt;
+        if (VirtualInput.E) swingAngle += swingSpeed * dt;
         swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
         // 붐 (W / S)
-        if (Input.GetKey(KeyCode.W)) boomAngle += boomSpeed * dt;
-        if (Input.GetKey(KeyCode.S)) boomAngle -= boomSpeed * dt;
+        if (VirtualInput.W) boomAngle += boomSpeed * dt;
+        if (VirtualInput.S) boomAngle -= boomSpeed * dt;
         boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
         // 암 (A / D)
-        if (Input.GetKey(KeyCode.A)) armAngle += armSpeed * dt;
-        if (Input.GetKey(KeyCode.D)) armAngle -= armSpeed * dt;
+        if (VirtualInput.A) armAngle += armSpeed * dt;
+        if (VirtualInput.D) armAngle -= armSpeed * dt;
         armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
         // 버킷 (R / F)
-        if (Input.GetKey(KeyCode.R)) bucketAngle += bucketSpeed * dt;
-        if (Input.GetKey(KeyCode.F)) bucketAngle -= bucketSpeed * dt;
+        if (VirtualInput.R) bucketAngle += bucketSpeed * dt;
+        if (VirtualInput.F) bucketAngle -= bucketSpeed * dt;
         bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
     }
 
@@ -76,12 +76,12 @@ public class ExcavatorController : MonoBehaviour
         swing.localRotation = initSwingLocalRot * Quaternion.AngleAxis(swingAngle, Vector3.forward);
 
         // Boom: X축 (Vector3.up)
-        boom.localRotation = initBoomLocalRot * Quaternion.AngleAxis(boomAngle, Vector3.up);
+        boom.localRotation = initBoomLocalRot * Quaternion.AngleAxis(boomAngle, Vector3.right);
 
         // Arm: Y축 (Vector3.up)
-        arm.localRotation = initArmLocalRot * Quaternion.AngleAxis(armAngle, Vector3.up);
+        arm.localRotation = initArmLocalRot * Quaternion.AngleAxis(armAngle, Vector3.right);
 
         // Bucket: Y축 (Vector3.up)
-        bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.up);
+        bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.right);
     }
 }
