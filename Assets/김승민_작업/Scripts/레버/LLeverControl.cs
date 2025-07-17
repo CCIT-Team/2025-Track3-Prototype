@@ -29,9 +29,9 @@ public class LLeverControl : MonoBehaviour
         var constrainedAxisY = new TransformerUtils.ConstrainedAxis();
         var constrainedAxisZ = new TransformerUtils.ConstrainedAxis();
 
-        constrainedAxisX.ConstrainAxis = false;
-        constrainedAxisY.ConstrainAxis = false;
-        constrainedAxisZ.ConstrainAxis = false;
+        constrainedAxisX.ConstrainAxis = true;
+        constrainedAxisY.ConstrainAxis = true;
+        constrainedAxisZ.ConstrainAxis = true;
 
         constrainedAxisX.AxisRange = rangeX;
         constrainedAxisY.AxisRange = rangeY;
@@ -50,8 +50,8 @@ public class LLeverControl : MonoBehaviour
         if (Mathf.Abs(x) > Mathf.Abs(z))
         {
             // X축(앞뒤)이 더 많이 기울어졌을 때
-            VirtualInput.D = x < -threshold;
-            VirtualInput.A = x > threshold;
+            VirtualInput.A = x < -threshold;
+            VirtualInput.D = x > threshold;
 
             // Z축 방향은 비활성화
             VirtualInput.Q = false;
@@ -60,8 +60,8 @@ public class LLeverControl : MonoBehaviour
         else
         {
             // Z축(좌우)이 더 많이 기울어졌을 때
-            VirtualInput.Q = z < -threshold;
-            VirtualInput.E = z > threshold;
+            VirtualInput.E = z < -threshold;
+            VirtualInput.Q = z > threshold;
 
             // X축 방향은 비활성화
             VirtualInput.D = false;

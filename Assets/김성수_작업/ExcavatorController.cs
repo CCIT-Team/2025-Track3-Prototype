@@ -60,23 +60,23 @@ public class ExcavatorController : MonoBehaviour
         float dt = Time.deltaTime;
 
         // 스윙 (Q / E)
-        if (VirtualInput.Q) swingAngle -= swingSpeed * dt;
-        if (VirtualInput.E) swingAngle += swingSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.Q]) swingAngle -= swingSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.E]) swingAngle += swingSpeed * dt;
         swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
         // 붐 (W / S)
-        if (VirtualInput.W) boomAngle += boomSpeed * dt;
-        if (VirtualInput.S) boomAngle -= boomSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.W]) boomAngle += boomSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.S]) boomAngle -= boomSpeed * dt;
         boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
         // 암 (A / D)
-        if (VirtualInput.A) armAngle += armSpeed * dt;
-        if (VirtualInput.D) armAngle -= armSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.A]) armAngle += armSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.D]) armAngle -= armSpeed * dt;
         armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
         // 버킷 (R / F)
-        if (VirtualInput.R) bucketAngle += bucketSpeed * dt;
-        if (VirtualInput.F) bucketAngle -= bucketSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.R]) bucketAngle += bucketSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.F]) bucketAngle -= bucketSpeed * dt;
         bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
     }
 

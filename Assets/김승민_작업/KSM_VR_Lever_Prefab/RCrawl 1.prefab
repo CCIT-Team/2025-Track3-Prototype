@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &400205310744753812
+--- !u!1 &3234075387366334221
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 9203078019155409175}
-  - component: {fileID: 2347670381101434261}
+  - component: {fileID: 5110813327230196555}
+  - component: {fileID: 3697619908576350567}
   m_Layer: 0
   m_Name: GameObject (3)
   m_TagString: Untagged
@@ -17,28 +17,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &9203078019155409175
+--- !u!4 &5110813327230196555
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400205310744753812}
+  m_GameObject: {fileID: 3234075387366334221}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8615535908228966434}
+  m_Father: {fileID: 5748887936810094904}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2347670381101434261
+--- !u!114 &3697619908576350567
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400205310744753812}
+  m_GameObject: {fileID: 3234075387366334221}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9a7676b01585ce43908639a27765dfc, type: 3}
@@ -48,8 +48,8 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 3876068341900588197}
-  _rigidbody: {fileID: 191673359868985985}
+  _pointableElement: {fileID: 7090107756401036938}
+  _rigidbody: {fileID: 3967438839221707852}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
   _scoringModifier:
@@ -73,7 +73,7 @@ MonoBehaviour:
   _movementProvider: {fileID: 0}
   _handAligment: 1
   _handGrabPoses: []
---- !u!1 &7933865610207680626
+--- !u!1 &4513400958717979118
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -81,15 +81,16 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8615535908228966434}
-  - component: {fileID: 6285629030917707408}
-  - component: {fileID: 8798588352921679652}
-  - component: {fileID: 8876368994004972657}
-  - component: {fileID: 191673359868985985}
-  - component: {fileID: 4457591996651757883}
-  - component: {fileID: 9209786818750171298}
-  - component: {fileID: 3876068341900588197}
-  - component: {fileID: 7363448382424749558}
+  - component: {fileID: 5748887936810094904}
+  - component: {fileID: 3963431948555877068}
+  - component: {fileID: 2838754470197398563}
+  - component: {fileID: 5231398559108458368}
+  - component: {fileID: 3967438839221707852}
+  - component: {fileID: 1311572735081630677}
+  - component: {fileID: 6126408178247272111}
+  - component: {fileID: 7090107756401036938}
+  - component: {fileID: 36624570143226907}
+  - component: {fileID: 8621079745923979514}
   m_Layer: 0
   m_Name: RCrawl 1
   m_TagString: Untagged
@@ -97,37 +98,37 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8615535908228966434
+--- !u!4 &5748887936810094904
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.5, z: 0.3}
+  m_LocalPosition: {x: -0.7500037, y: 1.408, z: 0.91300476}
+  m_LocalScale: {x: 0.30000004, y: 0.49999976, z: 0.2999999}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 9203078019155409175}
+  - {fileID: 5110813327230196555}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6285629030917707408
+--- !u!33 &3963431948555877068
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8798588352921679652
+--- !u!23 &2838754470197398563
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -163,13 +164,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8876368994004972657
+--- !u!136 &5231398559108458368
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -178,7 +179,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -186,13 +187,13 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &191673359868985985
+--- !u!54 &3967438839221707852
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
@@ -213,13 +214,13 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &4457591996651757883
+--- !u!114 &1311572735081630677
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad34abafad169848a38072baa96cdb2, type: 3}
@@ -323,7 +324,7 @@ MonoBehaviour:
   m_SnapToColliderVolume: 1
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
-  m_MovementType: 1
+  m_MovementType: 0
   m_VelocityDamping: 1
   m_VelocityScale: 1
   m_AngularVelocityDamping: 1
@@ -365,27 +366,27 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
---- !u!114 &9209786818750171298
+--- !u!114 &6126408178247272111
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbdd83f998bee1d48a26686097d3b366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RCrawl: {fileID: 8615535908228966434}
+  RCrawl: {fileID: 5748887936810094904}
   threshold: 10
---- !u!114 &3876068341900588197
+--- !u!114 &7090107756401036938
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43f86b14a27b52f4f9298c33015b5c26, type: 3}
@@ -394,20 +395,20 @@ MonoBehaviour:
   _transferOnSecondSelection: 0
   _addNewPointsToFront: 0
   _forwardElement: {fileID: 0}
-  _oneGrabTransformer: {fileID: 0}
-  _twoGrabTransformer: {fileID: 0}
-  _targetTransform: {fileID: 0}
+  _oneGrabTransformer: {fileID: 36624570143226907}
+  _twoGrabTransformer: {fileID: 36624570143226907}
+  _targetTransform: {fileID: 5748887936810094904}
   _maxGrabPoints: -1
-  _rigidbody: {fileID: 191673359868985985}
+  _rigidbody: {fileID: 3967438839221707852}
   _kinematicWhileSelected: 0
   _throwWhenUnselected: 1
---- !u!114 &7363448382424749558
+--- !u!114 &36624570143226907
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7933865610207680626}
+  m_GameObject: {fileID: 4513400958717979118}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb7085c111fcb44493d57d4e336d3fd, type: 3}
@@ -418,18 +419,18 @@ MonoBehaviour:
     XAxis:
       ConstrainAxis: 1
       AxisRange:
-        Min: -0.6
-        Max: -0.6
+        Min: 0
+        Max: 0
     YAxis:
       ConstrainAxis: 1
       AxisRange:
-        Min: 0.5
-        Max: 0.5
+        Min: 0
+        Max: 0
     ZAxis:
       ConstrainAxis: 1
       AxisRange:
-        Min: 0.18
-        Max: 0.18
+        Min: 0
+        Max: 0
   _rotationConstraints:
     XAxis:
       ConstrainAxis: 0
@@ -464,3 +465,42 @@ MonoBehaviour:
         Min: 1
         Max: 1
   _resetScaleResponsivenessOnConstraintOvershoot: 0
+--- !u!59 &8621079745923979514
+HingeJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513400958717979118}
+  m_ConnectedBody: {fileID: 0}
+  m_ConnectedArticulationBody: {fileID: 0}
+  m_Anchor: {x: 0, y: -1, z: 0}
+  m_Axis: {x: 1, y: 0, z: 1}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: -0.00750003, y: -0.009567848, z: 0.009079996}
+  serializedVersion: 2
+  m_UseSpring: 1
+  m_Spring:
+    spring: 30
+    damper: 3
+    targetPosition: 0
+  m_UseMotor: 0
+  m_Motor:
+    targetVelocity: 0
+    force: 0
+    freeSpin: 0
+  m_UseLimits: 1
+  m_ExtendedLimits: 0
+  m_UseAcceleration: 0
+  m_Limits:
+    min: -30
+    max: 30
+    bounciness: 0
+    bounceMinVelocity: 0.2
+    contactDistance: 0
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1
