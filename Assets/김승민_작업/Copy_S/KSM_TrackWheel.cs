@@ -21,10 +21,10 @@ public class KSM_TrackWheel : MonoBehaviour
 
         Debug.Log(currentTurnSpeed);
         // 키 입력 처리
-        float leftInput = VirtualInput.T ? 1 : VirtualInput.G ? -1 : 0;
-        float rightInput = VirtualInput.U ? 1 : VirtualInput.J ? -1 : 0;
+        float leftInput = VirtualInput.inputs[(int)EINPUT.T] ? 1 : VirtualInput.inputs[(int)EINPUT.G] ? -1 : 0;
+        float rightInput = VirtualInput.inputs[(int)EINPUT.U] ? 1 : VirtualInput.inputs[(int)EINPUT.J] ? -1 : 0;
 
-        Debug.Log($"T : {VirtualInput.T}, G : {VirtualInput.G}");
+        Debug.Log($"T : {VirtualInput.inputs[(int)EINPUT.T]}, G : {VirtualInput.inputs[(int)EINPUT.G]}");
 
         // 왼쪽 바퀴 처리
         foreach (WheelCollider wc in leftWheels)

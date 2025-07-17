@@ -1,10 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+public enum EINPUT
+{
+    None = 0,
+    Q,
+    W,
+    D,
+    A,
+    E,
+    S,
+    R,
+    F,
+    T,
+    G,
+    U,
+    J,
+    Count
+}
 
 public static class VirtualInput
 {
+    public static bool[] inputs = Enumerable.Repeat(false, (int)EINPUT.Count).ToArray();
     public static bool Q = false;
     public static bool W = false;
     public static bool D = false;
