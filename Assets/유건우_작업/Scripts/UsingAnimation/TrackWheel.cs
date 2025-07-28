@@ -18,7 +18,7 @@ public class TrackWheel : MonoBehaviour
         // 현재 속도 계산
         Vector3 currentTurnSpeed = body.angularVelocity;
 
-        Debug.Log(currentTurnSpeed);
+        //Debug.Log(currentTurnSpeed);
         // 키 입력 처리
         float leftInput = Input.GetKey(KeyCode.T) ? 1 : Input.GetKey(KeyCode.G) ? -1 : 0;
         float rightInput = Input.GetKey(KeyCode.U) ? 1 : Input.GetKey(KeyCode.J) ? -1 : 0;

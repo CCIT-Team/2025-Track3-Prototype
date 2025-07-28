@@ -1,60 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TerrainTools;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
 public class BucketControllerMerged : MonoBehaviour, IPoolable
 {
     [Header("Blade Settings")]
-    [Tooltip("Collider used for AABB excavation volume.")]
     [SerializeField] private Collider bladeCollider;
-    [Tooltip("Transform used for ground sampling depth checks.")]
     [SerializeField] private Transform bladeTransform;
 
     [Header("Excavation Settings")]
-    [Tooltip("Excavation rate in cubic meters per second.")]
     [SerializeField] private float excavateRate = 3f;
-    [Tooltip("Particles spawned per cubic meter excavated.")]
     [SerializeField] private float particlePerCubicM = 30f;
 
     [Header("Spawn Settings")]
-    [Tooltip("Prefab for soil particles to spawn.")]
-    [SerializeField] private GameObject soilPrefab;
-    [Tooltip("Maximum particles spawned per FixedUpdate.")]
+    [SerializeField, Tooltip("레이어별로 사용할 soil particle 프리팹을 지정하세요")]
+    private GameObject[] soilPrefabs;
     [SerializeField] private int maxParticlesPerFrame = 500;
 
     [Header("Depth & Layers")]
-    [Tooltip("Additional penetration depth offset.")]
     [SerializeField] private float depthOffset = 0.1f;
-    [Tooltip("Layer(s) considered terrain for OverlapBox.")]
     [SerializeField] private LayerMask terrainLayer;
 
-    [Header("Mode Angle Thresholds (deg)")]
-    [SerializeField] private float dumpMinAngle = -90f;
-    [SerializeField] private float dumpMaxAngle = 0f;
-    [SerializeField] private float digMinAngle = 0f;
-    [SerializeField] private float digMaxAngle = 45f;
-    [SerializeField] private float idleMinAngle = 45f;
-    [SerializeField] private float idleMaxAngle = 90f;
-    /////////////////////////////////////
-
-
     [Header("VFX Settings")]
-    [Tooltip("굴착 시 생성될 먼지 효과 프리팹")]
     [SerializeField] private GameObject dustVFXPrefab;
-    [Tooltip("먼지 효과 생성 주기 (초)")]
     [SerializeField] private float vfxCooldown = 0.5f;
 
-    [Header("References")]
-    [Tooltip("TerrainDeformManager to delegate terrain modifications.")]
-    [SerializeField] private TerrainDeformManagerMerged deformManager;
-    [Tooltip("Terrain used for height sampling.")]
-    [SerializeField] private Terrain terrain;
-    [Tooltip("Controller providing bucketAngle.")]
-    [SerializeField] private ExcavatorController excavatorController;
-    private BucketGrabberMultiMerged _modeCtrl;
+    [Header("References (Assign in Inspector)")]
+    [SerializeField, Tooltip("하나라도 할당하세요")]
+    private TerrainDeformManagerMerged deformManager;
+    [SerializeField, Tooltip("하나라도 할당하세요")]
+    private Terrain terrain;
+    [SerializeField, Tooltip("PublicMerged 버전")]
+    private ExcavatorController_publicMerged excavatorControllerPublic;
+    [SerializeField, Tooltip("Poly 버전")]
+    private ExcavatorController_Poly excavatorControllerPoly;
 
+    private BucketGrabberMultiMerged _modeCtrl;
     private Rigidbody _rb;
     private Collider _col;
     private TerrainCollider _terrainCollider;
@@ -63,53 +45,62 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
 
     public bool isDigging { get; private set; }
 
-    [SerializeField]
-    private Material[] _mats;
+    [Header("Soil Particle Painting")]
+    [SerializeField] private Material[] _mats;
+    [SerializeField] private TerrainLayer _diggedLayerTexture;
+    [SerializeField] private float _diggedLayerWeight = 1f;
     private List<Material> _buffer = new List<Material>();
-    [SerializeField]
-    private TerrainLayer _diggedLayerTexture;
-    [SerializeField]
-    private float _diggedLayerWeight = 3;
 
     private GameObjectPool _pool;
 
+    // 어느 컨트롤러로 동작할지
+    private enum ControllerType { None, PublicMerged, Poly }
+    private ControllerType _activeController = ControllerType.None;
+
     void Start()
     {
-        // Rigidbody 설정
+        // Rigidbody 세팅
         _rb = GetComponent<Rigidbody>();
         _rb.isKinematic = true;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-        // Collider
+        // Collider 세팅
         _col = GetComponent<Collider>();
-        if (_col == null)
-            Debug.LogWarning($"[BucketController] Collider missing on '{gameObject.name}'");
 
-        // TerrainDeformManager
-        deformManager = FindObjectOfType<TerrainDeformManagerMerged>();
+        // deformManager 체크
         if (deformManager == null)
         {
-            Debug.LogError("[BucketController] TerrainDeformManager not found");
-            enabled = false;
-            return;
+            Debug.LogError("[BucketControllerMerged] TerrainDeformManagerMerged 미할당!");
+            enabled = false; return;
         }
+        if (!deformManager.gameObject.activeInHierarchy)
+            deformManager.gameObject.SetActive(true);
 
-        if (terrain == null && deformManager != null)
-            terrain = deformManager.GetComponent<Terrain>();
+        // terrain 체크
+        if (terrain == null)
+        {
+            Debug.LogError("[BucketControllerMerged] Terrain 미할당!");
+            enabled = false; return;
+        }
         _terrainCollider = deformManager.GetComponent<TerrainCollider>();
 
-        // BucketGrabberMulti
-        _modeCtrl = GetComponentInParent<BucketGrabberMultiMerged>();
-        if (_modeCtrl == null)
-            Debug.LogError("[BucketController] BucketGrabberMulti not found");
-
-        // ExcavatorController 할당 여부 확인
-        if (excavatorController == null)
+        // ExcavatorController 결정
+        if (excavatorControllerPublic != null)
         {
-            excavatorController = FindObjectOfType<ExcavatorController>();
-            if (excavatorController == null)
-                Debug.LogError("[BucketController] ExcavatorController not found in scene or inspector");
+            _activeController = ControllerType.PublicMerged;
         }
+        else if (excavatorControllerPoly != null)
+        {
+            _activeController = ControllerType.Poly;
+        }
+        else
+        {
+            Debug.LogError("[BucketControllerMerged] 둘 중 하나의 ExcavatorController를 할당하세요!");
+            enabled = false; return;
+        }
+
+        // Grabber 모드 컨트롤러
+        _modeCtrl = GetComponentInParent<BucketGrabberMultiMerged>();
     }
 
     void FixedUpdate()
@@ -126,6 +117,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
 
         float deltaVol = excavateRate * Time.fixedDeltaTime;
 
+        // 땅 파기
         Vector3 tPos = terrain.transform.position;
         Vector3[] corners = new Vector3[4]
         {
@@ -142,31 +134,93 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
         }
         penetration = Mathf.Max(0f, penetration);
 
-        float carved = deformManager.LowerRectAABB(bb.min, bb.max, deltaVol, penetration);
+        deformManager.LowerRectAABBAsync(bb.min, bb.max, deltaVol, penetration);
         deformManager.PaintTexture(bb.min, bb.max, _diggedLayerTexture, _diggedLayerWeight);
 
-        /*if (carved > 0f && dustVFXPrefab != null && Time.time >= nextVfxTime)
+        // Dust VFX
+        if (dustVFXPrefab != null && Time.time >= nextVfxTime)
         {
             nextVfxTime = Time.time + vfxCooldown;
             Instantiate(dustVFXPrefab, bb.center, Quaternion.identity);
-        }*/
+        }
 
-        SpawnParticles(carved, bb);
+        SpawnParticles(deltaVol, bb);
     }
+
+    private void SpawnParticles(float carvedVol, Bounds bb)
+    {
+        if (carvedVol <= 0f || particlePerCubicM <= 0f) return;
+
+        _particleAccumulator += carvedVol * particlePerCubicM;
+        int toSpawn = Mathf.FloorToInt(_particleAccumulator);
+        _particleAccumulator -= toSpawn;
+        toSpawn = Mathf.Min(toSpawn, maxParticlesPerFrame);
+
+        TerrainData tData = terrain.terrainData;
+        Vector3 tPos = terrain.transform.position;
+        int w = tData.alphamapWidth, h = tData.alphamapHeight;
+
+        for (int i = 0; i < toSpawn; i++)
+        {
+            // 1) 랜덤한 월드 좌표
+            float x = Random.Range(bb.min.x, bb.max.x);
+            float z = Random.Range(bb.min.z, bb.max.z);
+
+            // 2) 알파맵 좌표로 매핑
+            int mapX = Mathf.Clamp((int)((x - tPos.x) / tData.size.x * w), 0, w - 1);
+            int mapZ = Mathf.Clamp((int)((z - tPos.z) / tData.size.z * h), 0, h - 1);
+
+            // 3) dominant layer 계산
+            float[,,] alphas = tData.GetAlphamaps(mapX, mapZ, 1, 1);
+            int dominantLayer = 0;
+            float maxMix = 0f;
+            for (int layer = 0; layer < alphas.GetLength(2); layer++)
+            {
+                if (alphas[0, 0, layer] > maxMix)
+                {
+                    maxMix = alphas[0, 0, layer];
+                    dominantLayer = layer;
+                }
+            }
+
+            // 4) 사용할 프리팹 선택 (배열 범위 체크)
+            int idx = Mathf.Clamp(dominantLayer, 0, soilPrefabs.Length - 1);
+            GameObject prefab = soilPrefabs[idx];
+
+            // 5) 생성
+            float y = terrain.SampleHeight(new Vector3(x, 0f, z)) + tPos.y + 0.5f;
+            var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
+
+            // 6) (Optional) SoilParticleMerged에 레이어 정보 전달
+            if (go.TryGetComponent<SoilParticleMerged>(out var p))
+                p.SetLayer(terrain.terrainData.terrainLayers[dominantLayer]);
+
+            // 7) 물리 설정
+            if (go.TryGetComponent<Rigidbody>(out var rb))
+                rb.mass = 0.1f;
+        }
+    }
+
 
     private void UpdateMode()
     {
-        if (excavatorController == null || _modeCtrl == null) return;
+        // 할당된 컨트롤러에서 bucketAngle 가져오기
+        float angle = 0f;
+        switch (_activeController)
+        {
+            case ControllerType.PublicMerged:
+                angle = excavatorControllerPublic.bucketAngle;
+                break;
+            case ControllerType.Poly:
+                angle = excavatorControllerPoly.bucketAngle;
+                break;
+        }
 
-        float angle = excavatorController.bucketAngle;
-        var desired = BucketGrabberMultiMerged.Mode.Idle;
-
-        if (angle >= dumpMinAngle && angle < dumpMaxAngle)
-            desired = BucketGrabberMultiMerged.Mode.Dump;
-        else if (angle >= digMinAngle && angle < digMaxAngle)
-            desired = BucketGrabberMultiMerged.Mode.Dig;
-        else if (angle >= idleMinAngle && angle <= idleMaxAngle)
-            desired = BucketGrabberMultiMerged.Mode.Idle;
+        // 모드 결정
+        BucketGrabberMultiMerged.Mode desired;
+        if (angle < 0f) desired = BucketGrabberMultiMerged.Mode.Dump;
+        else if (angle < 45f) desired = BucketGrabberMultiMerged.Mode.Dig;
+        else desired = BucketGrabberMultiMerged.Mode.Idle;
 
         if (_modeCtrl.CurrentMode != desired)
             _modeCtrl.SetMode(desired);
@@ -182,58 +236,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
             Physics.IgnoreCollision(_col, _terrainCollider, isDigging);
     }
 
-
-    private void SpawnParticles(float carvedVol, Bounds bb)
-    {
-        if (carvedVol <= 0f || particlePerCubicM <= 0f) return;
-
-        _particleAccumulator += carvedVol * particlePerCubicM;
-        int toSpawn = Mathf.FloorToInt(_particleAccumulator);
-        _particleAccumulator -= toSpawn;
-        toSpawn = Mathf.Min(toSpawn, maxParticlesPerFrame);
-        PixelTextureDataMerged[] textureDatas = deformManager.SelectTextures(bb.min, bb.max, toSpawn);
-
-        for (int i = 0; i < toSpawn; i++)
-        {
-            float x = Random.Range(bb.min.x, bb.max.x);
-            float z = Random.Range(bb.min.z, bb.max.z);
-            float y = terrain.SampleHeight(new Vector3(x, 0f, z))
-                        + terrain.transform.position.y + 0.5f;
-            var go = Instantiate(soilPrefab, new Vector3(x, y, z), Quaternion.identity);
-            // var go = _pool.GetGameObject();
-            // go.transform.position = new Vector3(x, y, z);
-            if (go.TryGetComponent<Rigidbody>(out var rb))
-            {
-                rb.mass = 0.1f;
-            }
-
-            if (go.TryGetComponent<SoilParticleMerged>(out var p))
-            {
-                p.SetLayer(textureDatas[i].layer);
-            }
-
-            if (go.TryGetComponent<Renderer>(out var ren))
-            {
-                int index = TerrainPaintUtility.FindTerrainLayerIndex(terrain, textureDatas[i].layer);
-                if (index < 0)
-                {
-                    continue;
-                }
-                _buffer.Clear();
-                _buffer.Add(_mats[index]);
-                ren.SetMaterials(_buffer);
-            }
-        }
-    }
-
-    public void SetPoolInstance(GameObjectPool poolInstance)
-    {
-        _pool = poolInstance;
-    }
-
-    public bool ComparePoolInstance(GameObjectPool poolInstance)
-    {
-        return _pool == poolInstance;
-    }
-
+    // IPoolable
+    public void SetPoolInstance(GameObjectPool pool) => _pool = pool;
+    public bool ComparePoolInstance(GameObjectPool pool) => _pool == pool;
 }
