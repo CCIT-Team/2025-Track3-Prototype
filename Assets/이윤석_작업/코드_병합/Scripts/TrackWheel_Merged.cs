@@ -15,8 +15,6 @@ public class TrackWheel_Merged : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 현재 속도 계산
-        Vector3 currentTurnSpeed = body.angularVelocity;
 
         // 키 입력 처리
         float leftInput = Input.GetKey(KeyCode.T) ? 1 : Input.GetKey(KeyCode.G) ? -1 : 0;

@@ -49,14 +49,14 @@ MeshRenderer:
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0f6b12df31674af41a7b12f65d4c1179, type: 2}
+  - {fileID: 2100000, guid: 7b706650f13099148ad605bf45220f92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
   dynamicFriction: 1
   restThreshold: 0.1
   restTime: 0.2
-  freezeSlopeAngleDeg: 70
+  freezeSlopeAngleDeg: 55
   bakeRadius: 0.5
   heightOffset: 0.3
   destroyBelowOffset: 0.1
@@ -158,3 +158,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   frictionCombine: 3
+  IsGrabbed: 0
