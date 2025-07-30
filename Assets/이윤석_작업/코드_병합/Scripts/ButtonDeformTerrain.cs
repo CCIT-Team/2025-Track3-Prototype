@@ -19,6 +19,12 @@ public class ButtonDeformTerrain : MonoBehaviour
     [SerializeField] private TerrainDeformManagerMerged deformManager;
     [SerializeField] private Terrain terrain;
 
+    [Header("VFX Settings")]
+    [SerializeField] private GameObject dustVFXPrefab;
+    [SerializeField] private float vfxCooldown = 0.5f;
+    [SerializeField] private float nextVfxTime = 0.1f;
+
+
     private BoxCollider boxCol;
 
     void Awake()
@@ -62,6 +68,13 @@ public class ButtonDeformTerrain : MonoBehaviour
             float z = Random.Range(bb.min.z, bb.max.z);
             float y = bb.max.y + 0.1f;
             Instantiate(soilParticlePrefab, new Vector3(x, y, z), Random.rotation);
+        }
+
+        // Dust VFX
+        if (dustVFXPrefab != null && Time.time >= nextVfxTime)
+        {
+            nextVfxTime = Time.time + vfxCooldown;
+            Instantiate(dustVFXPrefab, bb.center, Quaternion.identity);
         }
     }
 }

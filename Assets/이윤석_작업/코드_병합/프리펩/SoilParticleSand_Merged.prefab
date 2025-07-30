@@ -56,7 +56,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6ab6d388d9fbe8c408d8e2448ffaf474, type: 2}
+  - {fileID: 2100000, guid: 2bf583fe879d8d549be7bdb42970aba7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
   dynamicFriction: 1
   restThreshold: 0.1
   restTime: 0.2
-  freezeSlopeAngleDeg: 70
+  freezeSlopeAngleDeg: 55
   bakeRadius: 0.5
   heightOffset: 0.3
   destroyBelowOffset: 0.1
@@ -158,3 +158,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   frictionCombine: 2
+  IsGrabbed: 0
