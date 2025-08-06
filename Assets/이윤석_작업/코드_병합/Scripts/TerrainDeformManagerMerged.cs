@@ -1,20 +1,30 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Terrain))]
 public class TerrainDeformManagerMerged : MonoBehaviour
 {
-    private Terrain _terrain;
-    private TerrainData _terrainData;
+    [Header("Terrain Reference")]
+    [SerializeField] private Terrain _terrain;
+    [Header("Data Reference")]
+    [SerializeField] private TerrainData _terrainData;
+    [Header("Batch Settings")]
+    [Tooltip("한 프레임에 처리할 최대 셀 개수")]
+    [SerializeField] private int maxCellsPerBatch = 1024;
+
     private int _hmResolution;
     private int _amResolution;
-
-    // 원본 높이맵을 저장해 두어, 누적 깊이 제한에 사용
     private float[,] _initialHeights;
-    [SerializeField][Range(0,1)]
-    private float _diggedTextureMin=0;
-    [SerializeField][Range(0,1)]
-    private float _diggedTextureMax=1;
+    [SerializeField][Range(0,1f)] private float _diggedTextureMin = 0f;
+    [SerializeField][Range(0,1f)] private float _diggedTextureMax = 1f;
+
+    // 비동기 처리를 위한 누적값 및 코루틴 참조
+    private Coroutine _digCoroutine;
+    private float _pendingVolume;
+    private float _pendingMaxDepth;
+    private Vector3 _pendingMin = Vector3.one * float.MaxValue;
+    private Vector3 _pendingMax = Vector3.one * float.MinValue;
 
     void Awake()
     {
@@ -22,221 +32,119 @@ public class TerrainDeformManagerMerged : MonoBehaviour
         _terrainData = _terrain.terrainData;
         _hmResolution = _terrainData.heightmapResolution;
         _amResolution = _terrainData.alphamapResolution;
-
-        // 전체 높이맵(정규화된 0~1 값)을 보관
-        _initialHeights = _terrainData.GetHeights(
-            0, 0, _hmResolution, _hmResolution
-        );
+        _initialHeights = _terrainData.GetHeights(0, 0, _hmResolution, _hmResolution);
     }
 
+    /// <summary>
+    /// 비동기 굴착 호출: 매 호출마다 입력값을 누적하고, 단일 코루틴으로 처리
+    /// </summary>
+    public void LowerRectAABBAsync(Vector3 min, Vector3 max, float targetVolume, float maxDepth)
+    {
+        // 값 누적
+        _pendingVolume += targetVolume;
+        _pendingMaxDepth = Mathf.Max(_pendingMaxDepth, maxDepth);
+        _pendingMin = Vector3.Min(_pendingMin, min);
+        _pendingMax = Vector3.Max(_pendingMax, max);
+
+        // 코루틴 미실행 시에만 시작
+        if (_digCoroutine == null)
+            _digCoroutine = StartCoroutine(LowerRectBatchCoroutine());
+    }
+
+    private IEnumerator LowerRectBatchCoroutine()
+    {
+        // 누적값 로컬 복사 및 초기화
+        var volume = _pendingVolume;
+        var maxDepth = _pendingMaxDepth;
+        var min = _pendingMin;
+        var max = _pendingMax;
+        _pendingVolume = 0f;
+        _pendingMaxDepth = 0f;
+        _pendingMin = Vector3.one * float.MaxValue;
+        _pendingMax = Vector3.one * float.MinValue;
+
+        // AABB 영역을 heightmap 좌표로 변환
+        int x0 = Mathf.Clamp(Mathf.RoundToInt((min.x - _terrain.transform.position.x) / _terrainData.size.x * _hmResolution), 0, _hmResolution - 1);
+        int z0 = Mathf.Clamp(Mathf.RoundToInt((min.z - _terrain.transform.position.z) / _terrainData.size.z * _hmResolution), 0, _hmResolution - 1);
+        int x1 = Mathf.Clamp(Mathf.RoundToInt((max.x - _terrain.transform.position.x) / _terrainData.size.x * _hmResolution), 0, _hmResolution - 1);
+        int z1 = Mathf.Clamp(Mathf.RoundToInt((max.z - _terrain.transform.position.z) / _terrainData.size.z * _hmResolution), 0, _hmResolution - 1);
+
+        int w = Mathf.Abs(x1 - x0) + 1;
+        int h = Mathf.Abs(z1 - z0) + 1;
+        if (w <= 0 || h <= 0) { _digCoroutine = null; yield break; }
+
+        float sizeY = _terrainData.size.y;
+        float cellArea = (_terrainData.size.x / (_hmResolution - 1)) * (_terrainData.size.z / (_hmResolution - 1));
+        float normDec = volume / (w * h * cellArea * sizeY);
+
+        float[,] heights = _terrainData.GetHeights(x0, z0, w, h);
+        float cx = w * 0.5f, cz = h * 0.5f;
+        float invR2 = 1f / (Mathf.Max(cx, cz) * Mathf.Max(cx, cz));
+        int total = w * h;
+        int processed = 0;
+
+        while (processed < total)
+        {
+            int batch = Mathf.Min(maxCellsPerBatch, total - processed);
+            for (int k = 0; k < batch; k++)
+            {
+                int idx = processed + k;
+                int ix = idx % w;
+                int iz = idx / w;
+                float dx = ix - cx;
+                float dz = iz - cz;
+                float falloff = Mathf.Clamp01(1f - (dx*dx + dz*dz) * invR2);
+
+                float init = _initialHeights[z0 + iz, x0 + ix];
+                float cur = heights[iz, ix];
+                float already = init - cur;
+                float allow = Mathf.Max(0f, (maxDepth * falloff) / sizeY - already);
+                float dec = Mathf.Min(normDec, allow, cur);
+
+                heights[iz, ix] = cur - dec;
+            }
+            processed += batch;
+            _terrainData.SetHeights(x0, z0, heights);
+            yield return null;
+        }
+        _digCoroutine = null;
+    }
+
+    /// <summary>
+    /// 기존 페인트 로직 그대로 동기 호출
+    /// </summary>
     public void PaintTexture(Vector3 min, Vector3 max, TerrainLayer targetLayer, float weight)
     {
         int layerIndex = -1;
-
-        for (int i = 0; i < _terrainData.terrainLayers.Length; i++)
+        var layers = _terrainData.terrainLayers;
+        for (int i = 0; i < layers.Length; i++)
         {
-            if (_terrainData.terrainLayers[i] == targetLayer)
-            {
-                layerIndex = i;
-                break;
-            }
+            if (layers[i] == targetLayer) { layerIndex = i; break; }
         }
+        if (layerIndex < 0) { Debug.LogWarning($"PaintTexture: 레이어 '{targetLayer.name}' 미발견"); return; }
 
-        if (layerIndex < 0)
-        {
-            Debug.Log("찾을 수 없는 레이어");
-            return;
-        }
-
-        Vector3 terrainPos = _terrain.transform.position;
-        int xStart = Mathf.Clamp(
-            Mathf.RoundToInt((min.x - terrainPos.x) / _terrainData.size.x * _amResolution),
-            0, _amResolution - 1);
-        int zStart = Mathf.Clamp(
-            Mathf.RoundToInt((min.z - terrainPos.z) / _terrainData.size.z * _amResolution),
-            0, _amResolution - 1);
-        int xEnd = Mathf.Clamp(
-            Mathf.RoundToInt((max.x - terrainPos.x) / _terrainData.size.x * _amResolution),
-            0, _amResolution - 1);
-        int zEnd = Mathf.Clamp(
-            Mathf.RoundToInt((max.z - terrainPos.z) / _terrainData.size.z * _amResolution),
-            0, _amResolution - 1);
+        Vector3 tPos = _terrain.transform.position;
+        int xStart = Mathf.Clamp(Mathf.RoundToInt((min.x - tPos.x) / _terrainData.size.x * _amResolution), 0, _amResolution - 1);
+        int zStart = Mathf.Clamp(Mathf.RoundToInt((min.z - tPos.z) / _terrainData.size.z * _amResolution), 0, _amResolution - 1);
+        int xEnd   = Mathf.Clamp(Mathf.RoundToInt((max.x - tPos.x) / _terrainData.size.x * _amResolution), 0, _amResolution - 1);
+        int zEnd   = Mathf.Clamp(Mathf.RoundToInt((max.z - tPos.z) / _terrainData.size.z * _amResolution), 0, _amResolution - 1);
 
         int sizeX = Mathf.Abs(xEnd - xStart) + 1;
         int sizeZ = Mathf.Abs(zEnd - zStart) + 1;
         if (sizeX <= 0 || sizeZ <= 0) return;
 
-        float[,,] alphaMaps = _terrainData.GetAlphamaps(xStart, zStart, sizeX, sizeZ);
-        int layerLength = alphaMaps.GetLength(2);
-        
-
+        float[,,] alpha = _terrainData.GetAlphamaps(xStart, zStart, sizeX, sizeZ);
+        int len = alpha.GetLength(2);
         for (int z = 0; z < sizeZ; z++)
+        for (int x = 0; x < sizeX; x++)
         {
-            for (int x = 0; x < sizeX; x++)
-            {
-                if (alphaMaps[z, x, layerIndex] <= _diggedTextureMin)
-                {
-                    alphaMaps[z, x, layerIndex] = 0.2f;
-                }
-                else if (alphaMaps[z,x,layerIndex] <= _diggedTextureMax)
-                {
-                    alphaMaps[z, x, layerIndex] += weight;
-                }
-                
-                //normalization
-                float sum = 0;
-                for (int i = 0; i < layerLength; i++)
-                {
-                    sum += alphaMaps[z, x, i];
-                }
-
-                for (int i = 0; i < layerLength; i++)
-                {
-                    alphaMaps[z, x, i]/=sum;
-                }
-            }
+            float v = alpha[z, x, layerIndex];
+            if (v <= _diggedTextureMin) alpha[z, x, layerIndex] = 0.2f;
+            else if (v <= _diggedTextureMax) alpha[z, x, layerIndex] += weight;
+            float sum = 0f;
+            for (int i = 0; i < len; i++) sum += alpha[z, x, i];
+            for (int i = 0; i < len; i++) alpha[z, x, i] /= sum;
         }
-
-        _terrainData.SetAlphamaps(xStart, zStart, alphaMaps);
-    }
-
-    /// <summary>
-    /// Rectangular AABB 기준으로 terrain을 파내며, 
-    /// 침투 깊이(maxDepth)를 넘어서는 파기를 방지합니다.
-    /// (누적해서도 maxDepth 이상은 깎이지 않습니다.)
-    /// 파낸 실제 부피(totalDeformedVol)를 m³ 단위로 반환합니다.
-    /// </summary>
-    public float LowerRectAABB(Vector3 min, Vector3 max, float targetVolume, float maxDepth)
-    {
-        Vector3 terrainPos = _terrain.transform.position;
-        int xStart = Mathf.Clamp(
-            Mathf.RoundToInt((min.x - terrainPos.x) / _terrainData.size.x * _hmResolution),
-            0, _hmResolution - 1);
-        int zStart = Mathf.Clamp(
-            Mathf.RoundToInt((min.z - terrainPos.z) / _terrainData.size.z * _hmResolution),
-            0, _hmResolution - 1);
-        int xEnd   = Mathf.Clamp(
-            Mathf.RoundToInt((max.x - terrainPos.x) / _terrainData.size.x * _hmResolution),
-            0, _hmResolution - 1);
-        int zEnd   = Mathf.Clamp(
-            Mathf.RoundToInt((max.z - terrainPos.z) / _terrainData.size.z * _hmResolution),
-            0, _hmResolution - 1);
-
-        int sizeX = Mathf.Abs(xEnd - xStart) + 1;
-        int sizeZ = Mathf.Abs(zEnd - zStart) + 1;
-        if (sizeX <= 0 || sizeZ <= 0) return 0f;
-
-        float mapSizeY = _terrainData.size.y;
-        float[,] heights = _terrainData.GetHeights(xStart, zStart, sizeX, sizeZ);
-        float totalDeformedVol = 0f;
-
-        float cellSizeX = _terrainData.size.x / (_hmResolution - 1);
-        float cellSizeZ = _terrainData.size.z / (_hmResolution - 1);
-        float pixelArea = cellSizeX * cellSizeZ;
-
-        // targetVolume m³ -> normalized height decrease per cell
-        float heightNormDecrease = targetVolume 
-                                  / (sizeX * sizeZ * pixelArea * mapSizeY);
-
-        // AABB 안에서 중심/반경 계산 (셀 단위)
-        float cx = sizeX * 0.5f;
-        float cz = sizeZ * 0.5f;
-        float radius = Mathf.Max(sizeX, sizeZ) * 0.5f;
-
-        // 블록 내부 각 셀 순회
-        for (int xi = 0; xi < sizeX; xi++)
-        {
-            for (int zi = 0; zi < sizeZ; zi++)
-            {
-                // 1) 거리 기반 falloff 계산 (0~1)
-                float dx = xi - cx;
-                float dz = zi - cz;
-                float dist = Mathf.Sqrt(dx * dx + dz * dz);
-                float falloff = Mathf.Clamp01(1f - dist / radius);
-
-                // 2) 셀 절대 인덱스
-                int absX = xStart + xi;
-                int absZ = zStart + zi;
-
-                // 3) 원본 높이 정규화값
-                float initNorm = _initialHeights[absZ, absX];
-                // 4) 현재 높이 정규화값
-                float currentNorm = heights[zi, xi];
-
-                // 5) 이미 깎인 비율 = init - current
-                float alreadyDec = initNorm - currentNorm;
-
-                // 6) 이 셀에 허용된 누적 최대 감소 비율
-                float maxNormDepth = (maxDepth * falloff) / mapSizeY;
-                float remainNorm = Mathf.Max(0f, maxNormDepth - alreadyDec);
-
-                // 7) 한 프레임당 깎을 비율은
-                //    heightNormDecrease (목표량) vs remainNorm vs currentNorm 중 최소
-                float decreaseNorm = Mathf.Min(
-                    heightNormDecrease,
-                    remainNorm,
-                    currentNorm
-                );
-
-                // 8) 적용
-                heights[zi, xi] -= decreaseNorm;
-                totalDeformedVol += decreaseNorm * mapSizeY * pixelArea;
-            }
-        }
-
-        // 최종 반영
-        _terrainData.SetHeights(xStart, zStart, heights);
-        return totalDeformedVol;
-    }
-
-
-
-
-    public PixelTextureDataMerged[] SelectTextures(Vector3 min, Vector3 max, int maxSampleCnt)
-    {
-        Vector3 terrainPos = _terrain.transform.position;
-        int xStart = Mathf.Clamp(
-            Mathf.RoundToInt((min.x - terrainPos.x) / _terrainData.size.x * _amResolution),
-            0, _amResolution - 1);
-        int zStart = Mathf.Clamp(
-            Mathf.RoundToInt((min.z - terrainPos.z) / _terrainData.size.z * _amResolution),
-            0, _amResolution - 1);
-        int xEnd = Mathf.Clamp(
-            Mathf.RoundToInt((max.x - terrainPos.x) / _terrainData.size.x * _amResolution),
-            0, _amResolution - 1);
-        int zEnd = Mathf.Clamp(
-            Mathf.RoundToInt((max.z - terrainPos.z) / _terrainData.size.z * _amResolution),
-            0, _amResolution - 1);
-
-        int sizeX = Mathf.Abs(xEnd - xStart) + 1;
-        int sizeZ = Mathf.Abs(zEnd - zStart) + 1;
-        if (sizeX <= 0 || sizeZ <= 0) return null;
-
-        float[,,] alphamaps = _terrainData.GetAlphamaps(xStart, zStart, sizeX, sizeZ);
-        PixelTextureDataMerged[] selected = new PixelTextureDataMerged[maxSampleCnt];
-
-        int layerCnt = alphamaps.GetLength(2);
-
-        for (int i = 0; i < maxSampleCnt; i++)
-        {
-            int x = UnityEngine.Random.Range(xStart, xEnd);
-            int z = UnityEngine.Random.Range(zStart, zEnd);
-
-            int hIndex = 0;
-            int index = 0;
-            float maxRate = alphamaps[z - zStart, x - xStart, 0];
-            for (; index < layerCnt; index++)
-            {
-                if (alphamaps[z - zStart, x - xStart, index] > maxRate)
-                {
-                    maxRate = alphamaps[z - zStart, x - xStart, index];
-                    hIndex = index;
-                }
-            }
-            selected[i] = new PixelTextureDataMerged(_terrainData.terrainLayers[hIndex], x, z);
-
-        }
-
-        return selected;
+        _terrainData.SetAlphamaps(xStart, zStart, alpha);
     }
 }
