@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4604919297908322323}
   m_Layer: 6
   m_Name: Ground_JH_Merged
-  m_TagString: Untagged
+  m_TagString: SoilParticle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 5993821863293675804}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -50, y: 0, z: -50}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -128,8 +128,11 @@ MonoBehaviour:
   terrain: {fileID: 8246249363982604608}
   autoBakeEnabled: 1
   autoBakeInterval: 5
-  defaultBakeRadius: 0.5
-  defaultHeightOffset: 0.3
+  maxBakeHeightAboveGround: 100
+  bakeVelocityThreshold: 0.01
+  defaultBakeRadius: 1
+  defaultHeightOffset: 0.75
+  destroyBelowOffset: 0.1
   dustVFXPrefab: {fileID: 97370009020866654, guid: 3cb28cbc25013e94594fb8e175f05c22,
     type: 3}
   relaxRadius: 2

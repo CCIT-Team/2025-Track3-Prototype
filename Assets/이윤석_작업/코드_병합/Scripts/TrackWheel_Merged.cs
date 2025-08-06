@@ -5,33 +5,29 @@ using UnityEngine;
 
 public class TrackWheel_Merged : MonoBehaviour
 {
-    public WheelCollider[] leftWheels; // ì™¼ìª½ íŠ¸ë™
-    public WheelCollider[] rightWheels; // ì˜¤ë¥¸ìª½ íŠ¸ë™
+    public WheelCollider[] leftWheels; // ¿ŞÂÊ Æ®·¢
+    public WheelCollider[] rightWheels; // ¿À¸¥ÂÊ Æ®·¢
 
-    public float motorTorque = 500f;  // ê°€ì† ëª¨í„° ì†ë„
-    public float brakeTorque = 1000f; // ë¸Œë ˆì´í¬ ì†ë„
+    public float motorTorque = 500f;  // °¡¼Ó ¸ğÅÍ ¼Óµµ
+    public float brakeTorque = 1000f; // ºê·¹ÀÌÅ© ¼Óµµ
 
-    public Rigidbody body;           // ì†ë„ ì¸¡ì •ì„ ìœ„í•œ ëª¸ì²´
-
+    public Rigidbody body;           // ¼Óµµ ÃøÁ¤À» À§ÇÑ ¸öÃ¼
 
     void FixedUpdate()
     {
-        // í˜„ì¬ ì†ë„ ê³„ì‚°
-        Vector3 currentTurnSpeed = body.angularVelocity;
 
-        Debug.Log(currentTurnSpeed);
-        // í‚¤ ì…ë ¥ ì²˜ë¦¬
+        // Å° ÀÔ·Â Ã³¸®
         float leftInput = Input.GetKey(KeyCode.T) ? 1 : Input.GetKey(KeyCode.G) ? -1 : 0;
         float rightInput = Input.GetKey(KeyCode.U) ? 1 : Input.GetKey(KeyCode.J) ? -1 : 0;
 
-        // ì™¼ìª½ ë°”í€´ ì²˜ë¦¬
+        // ¿ŞÂÊ ¹ÙÄû Ã³¸®
         foreach (WheelCollider wc in leftWheels)
         {
             wc.motorTorque = leftInput * motorTorque;
             wc.brakeTorque = (leftInput == 0) ? brakeTorque : 0;
         }
 
-        // ì˜¤ë¥¸ìª½ ë°”í€´ ì²˜ë¦¬
+        // ¿À¸¥ÂÊ ¹ÙÄû Ã³¸®
         foreach (WheelCollider wc in rightWheels)
         {
             wc.motorTorque = rightInput * motorTorque;

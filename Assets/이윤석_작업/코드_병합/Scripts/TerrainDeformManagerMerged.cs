@@ -16,8 +16,8 @@ public class TerrainDeformManagerMerged : MonoBehaviour
     private int _hmResolution;
     private int _amResolution;
     private float[,] _initialHeights;
-    [SerializeField][Range(0,1f)] private float _diggedTextureMin = 0f;
-    [SerializeField][Range(0,1f)] private float _diggedTextureMax = 1f;
+    [SerializeField][Range(0, 1f)] private float _diggedTextureMin = 0f;
+    [SerializeField][Range(0, 1f)] private float _diggedTextureMax = 1f;
 
     // 비동기 처리를 위한 누적값 및 코루틴 참조
     private Coroutine _digCoroutine;
@@ -93,7 +93,7 @@ public class TerrainDeformManagerMerged : MonoBehaviour
                 int iz = idx / w;
                 float dx = ix - cx;
                 float dz = iz - cz;
-                float falloff = Mathf.Clamp01(1f - (dx*dx + dz*dz) * invR2);
+                float falloff = Mathf.Clamp01(1f - (dx * dx + dz * dz) * invR2);
 
                 float init = _initialHeights[z0 + iz, x0 + ix];
                 float cur = heights[iz, ix];
@@ -126,8 +126,8 @@ public class TerrainDeformManagerMerged : MonoBehaviour
         Vector3 tPos = _terrain.transform.position;
         int xStart = Mathf.Clamp(Mathf.RoundToInt((min.x - tPos.x) / _terrainData.size.x * _amResolution), 0, _amResolution - 1);
         int zStart = Mathf.Clamp(Mathf.RoundToInt((min.z - tPos.z) / _terrainData.size.z * _amResolution), 0, _amResolution - 1);
-        int xEnd   = Mathf.Clamp(Mathf.RoundToInt((max.x - tPos.x) / _terrainData.size.x * _amResolution), 0, _amResolution - 1);
-        int zEnd   = Mathf.Clamp(Mathf.RoundToInt((max.z - tPos.z) / _terrainData.size.z * _amResolution), 0, _amResolution - 1);
+        int xEnd = Mathf.Clamp(Mathf.RoundToInt((max.x - tPos.x) / _terrainData.size.x * _amResolution), 0, _amResolution - 1);
+        int zEnd = Mathf.Clamp(Mathf.RoundToInt((max.z - tPos.z) / _terrainData.size.z * _amResolution), 0, _amResolution - 1);
 
         int sizeX = Mathf.Abs(xEnd - xStart) + 1;
         int sizeZ = Mathf.Abs(zEnd - zStart) + 1;
@@ -136,15 +136,15 @@ public class TerrainDeformManagerMerged : MonoBehaviour
         float[,,] alpha = _terrainData.GetAlphamaps(xStart, zStart, sizeX, sizeZ);
         int len = alpha.GetLength(2);
         for (int z = 0; z < sizeZ; z++)
-        for (int x = 0; x < sizeX; x++)
-        {
-            float v = alpha[z, x, layerIndex];
-            if (v <= _diggedTextureMin) alpha[z, x, layerIndex] = 0.2f;
-            else if (v <= _diggedTextureMax) alpha[z, x, layerIndex] += weight;
-            float sum = 0f;
-            for (int i = 0; i < len; i++) sum += alpha[z, x, i];
-            for (int i = 0; i < len; i++) alpha[z, x, i] /= sum;
-        }
+            for (int x = 0; x < sizeX; x++)
+            {
+                float v = alpha[z, x, layerIndex];
+                if (v <= _diggedTextureMin) alpha[z, x, layerIndex] = 0.2f;
+                else if (v <= _diggedTextureMax) alpha[z, x, layerIndex] += weight;
+                float sum = 0f;
+                for (int i = 0; i < len; i++) sum += alpha[z, x, i];
+                for (int i = 0; i < len; i++) alpha[z, x, i] /= sum;
+            }
         _terrainData.SetAlphamaps(xStart, zStart, alpha);
     }
 }

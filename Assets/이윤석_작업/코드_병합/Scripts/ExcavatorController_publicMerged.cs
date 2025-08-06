@@ -3,10 +3,10 @@ using UnityEngine;
 public class ExcavatorController_publicMerged : MonoBehaviour
 {
     [Header("Excavator Parts")]
-    public Transform swing;        // ExcavatorBody - êµ´ì°©ê¸° ì°¨ì²´ (ì¢Œìš° íšŒì „)
-    public Transform boom;         // Arm - ì£¼ íŒ” (ìƒí•˜ ì›€ì§ì„)
-    public Transform arm;          // Arm_Second - ë³´ì¡° íŒ” (ë¶ì— ì—°ê²°)
-    public Transform bucket;       // Bucket - ë²„í‚· (ì•”ì— ì—°ê²°)
+    public Transform swing;        // ExcavatorBody - ±¼Âø±â Â÷Ã¼ (ÁÂ¿ì È¸Àü)
+    public Transform boom;         // Arm - ÁÖ ÆÈ (»óÇÏ ¿òÁ÷ÀÓ)
+    public Transform arm;          // Arm_Second - º¸Á¶ ÆÈ (ºÕ¿¡ ¿¬°á)
+    public Transform bucket;       // Bucket - ¹öÅ¶ (¾Ï¿¡ ¿¬°á)
 
     [Header("Rotation Settings")]
     public float swingSpeed = 30f;
@@ -20,28 +20,28 @@ public class ExcavatorController_publicMerged : MonoBehaviour
     public float minArmAngle = -90f, maxArmAngle = 90f;
     public float minBucketAngle = -90f, maxBucketAngle = 90f;
 
-    // í˜„ì¬ ê° íŒŒíŠ¸ì˜ ëª©í‘œ íšŒì „ ê°ë„
+    // ÇöÀç °¢ ÆÄÆ®ÀÇ ¸ñÇ¥ È¸Àü °¢µµ
     private float swingAngle = 0f;
     private float boomAngle = 0f;
     private float armAngle = 0f;
     public float bucketAngle = 0f;
 
-    // ê° íŒŒíŠ¸ì˜ ì´ˆê¸° ë¡œì»¬ íšŒì „ê°’ (ìƒëŒ€ì ì¸ ì›€ì§ì„ì„ ìœ„í•´ í•„ìš”)
+    // °¢ ÆÄÆ®ÀÇ ÃÊ±â ·ÎÄÃ È¸Àü°ª (»ó´ëÀûÀÎ ¿òÁ÷ÀÓÀ» À§ÇØ ÇÊ¿ä)
     private Quaternion initSwingLocalRot;
     private Quaternion initBoomLocalRot;
     private Quaternion initArmLocalRot;
     private Quaternion initBucketLocalRot;
-    
+
     void Start()
     {
-        // ê° êµ´ì°©ê¸° ë¶€í’ˆì˜ ì´ˆê¸° ë¡œì»¬ íšŒì „ê°’ì„ ì €ì¥
+        // °¢ ±¼Âø±â ºÎÇ°ÀÇ ÃÊ±â ·ÎÄÃ È¸Àü°ªÀ» ÀúÀå
         initSwingLocalRot = swing.localRotation;
         initBoomLocalRot = boom.localRotation;
         initArmLocalRot = arm.localRotation;
         initBucketLocalRot = bucket.localRotation;
 
-        // Start ì‹œì ì— ê° ì‹¤ë¦°ë”ì˜ 'rodLocalZ_Retracted' ê°’ì„
-        // í˜„ì¬ ë¡œì»¬ ìœ„ì¹˜ë¡œ ìë™ ì €ì¥í•˜ëŠ” ì˜µì…˜ (ì„ íƒ ì‚¬í•­, ì¸ìŠ¤í™í„° ìˆ˜ë™ ì…ë ¥ ê¶Œì¥)
+        // Start ½ÃÁ¡¿¡ °¢ ½Ç¸°´õÀÇ 'rodLocalZ_Retracted' °ªÀ»
+        // ÇöÀç ·ÎÄÃ À§Ä¡·Î ÀÚµ¿ ÀúÀåÇÏ´Â ¿É¼Ç (¼±ÅÃ »çÇ×, ÀÎ½ºÆåÅÍ ¼öµ¿ ÀÔ·Â ±ÇÀå)
         // if (boomCylinder.pistonRod != null) boomCylinder.rodLocalZ_Retracted = boomCylinder.pistonRod.localPosition.z;
         // if (armCylinder.pistonRod != null) armCylinder.rodLocalZ_Retracted = armCylinder.pistonRod.localPosition.z;
         // if (bucketCylinder.pistonRod != null) bucketCylinder.rodLocalZ_Retracted = bucketCylinder.pistonRod.localPosition.z;
@@ -49,9 +49,9 @@ public class ExcavatorController_publicMerged : MonoBehaviour
 
     void Update()
     {
-        // êµ´ì°©ê¸° ì•” ì…ë ¥ ì²˜ë¦¬
+        // ±¼Âø±â ¾Ï ÀÔ·Â Ã³¸®
         HandleInput();
-        // êµ´ì°©ê¸° ì•” íšŒì „ ì ìš©
+        // ±¼Âø±â ¾Ï È¸Àü Àû¿ë
         ApplyRotation();
     }
 
@@ -59,22 +59,22 @@ public class ExcavatorController_publicMerged : MonoBehaviour
     {
         float dt = Time.deltaTime;
 
-        // ìŠ¤ìœ™ (Q / E): ì°¨ì²´ ì¢Œìš° íšŒì „
+        // ½ºÀ® (Q / E): Â÷Ã¼ ÁÂ¿ì È¸Àü
         if (Input.GetKey(KeyCode.Q)) swingAngle -= swingSpeed * dt;
         if (Input.GetKey(KeyCode.E)) swingAngle += swingSpeed * dt;
         swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
-        // ë¶ (W / S): ì£¼ íŒ” ìƒí•˜ íšŒì „
+        // ºÕ (W / S): ÁÖ ÆÈ »óÇÏ È¸Àü
         if (Input.GetKey(KeyCode.W)) boomAngle += boomSpeed * dt;
         if (Input.GetKey(KeyCode.S)) boomAngle -= boomSpeed * dt;
         boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
-        // ì•” (A / D): ë³´ì¡° íŒ” ìƒí•˜ íšŒì „
+        // ¾Ï (A / D): º¸Á¶ ÆÈ »óÇÏ È¸Àü
         if (Input.GetKey(KeyCode.A)) armAngle += armSpeed * dt;
         if (Input.GetKey(KeyCode.D)) armAngle -= armSpeed * dt;
         armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
-        // ë²„í‚· (R / F): ë²„í‚· íšŒì „
+        // ¹öÅ¶ (R / F): ¹öÅ¶ È¸Àü
         if (Input.GetKey(KeyCode.R)) bucketAngle += bucketSpeed * dt;
         if (Input.GetKey(KeyCode.F)) bucketAngle -= bucketSpeed * dt;
         bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
@@ -82,18 +82,18 @@ public class ExcavatorController_publicMerged : MonoBehaviour
 
     void ApplyRotation()
     {
-        // ê° ë¶€í’ˆì— ê³„ì‚°ëœ íšŒì „ ê°ë„ ì ìš© (ì´ˆê¸° ë¡œì»¬ íšŒì „ì„ ê¸°ì¤€ìœ¼ë¡œ)
-        // Swing: Zì¶• (Vector3.forward) ê¸°ì¤€ íšŒì „
+        // °¢ ºÎÇ°¿¡ °è»êµÈ È¸Àü °¢µµ Àû¿ë (ÃÊ±â ·ÎÄÃ È¸ÀüÀ» ±âÁØÀ¸·Î)
+        // Swing: ZÃà (Vector3.forward) ±âÁØ È¸Àü
         swing.localRotation = initSwingLocalRot * Quaternion.AngleAxis(swingAngle, Vector3.forward);
 
-        // Boom: Xì¶• (Vector3.right) ê¸°ì¤€ íšŒì „
-        // ì´ ë¶€ë¶„ì—ì„œ ë¹„í‹€ë¦¼ì´ ìˆì—ˆë‹¤ë©´, `Vector3.` ë¶€ë¶„ì„ `Vector3.right`ë¡œ ìˆ˜ì •í•˜ë©´ ë©ë‹ˆë‹¤.
+        // Boom: XÃà (Vector3.right) ±âÁØ È¸Àü
+        // ÀÌ ºÎºĞ¿¡¼­ ºñÆ²¸²ÀÌ ÀÖ¾ú´Ù¸é, `Vector3.` ºÎºĞÀ» `Vector3.right`·Î ¼öÁ¤ÇÏ¸é µË´Ï´Ù.
         boom.localRotation = initBoomLocalRot * Quaternion.AngleAxis(boomAngle, Vector3.right);
 
-        // Arm: Yì¶• (Vector3.up) ê¸°ì¤€ íšŒì „
+        // Arm: YÃà (Vector3.up) ±âÁØ È¸Àü
         arm.localRotation = initArmLocalRot * Quaternion.AngleAxis(armAngle, Vector3.right);
 
-        // Bucket: Yì¶• (Vector3.up) ê¸°ì¤€ íšŒì „
+        // Bucket: YÃà (Vector3.up) ±âÁØ È¸Àü
         bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.right);
     }
 }

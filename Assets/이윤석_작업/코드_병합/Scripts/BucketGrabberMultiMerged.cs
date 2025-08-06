@@ -64,7 +64,15 @@ public class BucketGrabberMultiMerged : MonoBehaviour
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
         if (!soilObj.CompareTag("SoilParticle")) return;
+<<<<<<< HEAD
         if (!soilObj.TryGetComponent<Rigidbody>(out var rb) || !soilObj.TryGetComponent<Collider>(out var col)) return;
+=======
+        if (!soilObj.TryGetComponent<Rigidbody>(out var rb) ||
+            !soilObj.TryGetComponent<Collider>(out var col)) return;
+
+        // --- 태그를 GrabbedParticle로 바꿔서 SoilParticleMerged에서 스킵되도록 ---
+        soilObj.tag = "GrabbedParticle";
+>>>>>>> feature/영상-씬-제작
 
         rb.isKinematic = true;
         col.enabled = false;
@@ -97,21 +105,30 @@ public class BucketGrabberMultiMerged : MonoBehaviour
                 var rb = list[i];
                 if (rb == null) { list.RemoveAt(i); continue; }
 
-                // Restore physics
+                // 부모 해제
+                rb.transform.SetParent(null, true);
+
+                // --- 태그를 원래대로 SoilParticle로 복원 ---
+                rb.gameObject.tag = "SoilParticle";
+
+                // 겹침 해소용으로 살짝 띄우기
+                if (rb.TryGetComponent<Collider>(out var col))
+                {
+                    Vector3 p = rb.position;
+                    float groundY = Terrain.activeTerrain.SampleHeight(p)
+                                    + Terrain.activeTerrain.transform.position.y;
+                    if (p.y < groundY + 0.01f)
+                        p.y = groundY + 0.01f;
+                    rb.position = p;
+
+                    col.enabled = true;
+                }
+
+                // 물리 시뮬레이션 재개
                 rb.isKinematic = false;
                 rb.velocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
 
-                // Ensure collider has zero bounce
-                var col = rb.GetComponent<Collider>();
-                if (col && col.material != null)
-                {
-                    col.material.bounciness = 0f;
-                    col.material.bounceCombine = PhysicMaterialCombine.Minimum;
-                }
-
-                // Detach from bucket hierarchy
-                rb.transform.SetParent(null, true);
                 list.RemoveAt(i);
             }
         }

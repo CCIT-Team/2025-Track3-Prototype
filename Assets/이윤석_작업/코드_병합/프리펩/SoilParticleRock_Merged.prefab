@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 20.77, z: 2.35}
-  m_LocalScale: {x: 15, y: 15, z: 15}
+  m_LocalScale: {x: 30, y: 30, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -49,14 +49,14 @@ MeshRenderer:
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3dd49699c7a6abb4f8f1efb06169156b, type: 2}
+  - {fileID: 2100000, guid: 7b706650f13099148ad605bf45220f92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -115,7 +115,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 34134065779573551}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -146,10 +146,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79de2c73d53917446b3a39808392f9ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  staticFriction: 3
-  dynamicFriction: 3
-  restThreshold: 0.05
-  restTime: 0.5
-  bakeRadius: 0.3
+  staticFriction: 1.2
+  dynamicFriction: 1
+  restThreshold: 0.1
+  restTime: 0.2
+  freezeSlopeAngleDeg: 55
+  bakeRadius: 0.5
   heightOffset: 0.3
-  frictionCombine: 1
+  destroyBelowOffset: 0.1
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  frictionCombine: 3
+  IsGrabbed: 0
