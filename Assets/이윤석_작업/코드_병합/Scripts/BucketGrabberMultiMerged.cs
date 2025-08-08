@@ -64,15 +64,12 @@ public class BucketGrabberMultiMerged : MonoBehaviour
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
         if (!soilObj.CompareTag("SoilParticle")) return;
-<<<<<<< HEAD
-        if (!soilObj.TryGetComponent<Rigidbody>(out var rb) || !soilObj.TryGetComponent<Collider>(out var col)) return;
-=======
+
         if (!soilObj.TryGetComponent<Rigidbody>(out var rb) ||
             !soilObj.TryGetComponent<Collider>(out var col)) return;
 
         // --- 태그를 GrabbedParticle로 바꿔서 SoilParticleMerged에서 스킵되도록 ---
         soilObj.tag = "GrabbedParticle";
->>>>>>> feature/영상-씬-제작
 
         rb.isKinematic = true;
         col.enabled = false;
