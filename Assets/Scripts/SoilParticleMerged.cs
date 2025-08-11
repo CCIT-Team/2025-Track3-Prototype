@@ -71,7 +71,6 @@ public class SoilParticleMerged : MonoBehaviour
             bounciness = 0f,
             bounceCombine = PhysicMaterialCombine.Minimum
         };
-
         _col.material = mat;
     }
 

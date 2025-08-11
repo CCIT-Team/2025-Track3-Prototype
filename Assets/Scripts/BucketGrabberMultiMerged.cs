@@ -64,7 +64,6 @@ public class BucketGrabberMultiMerged : MonoBehaviour
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
         if (!soilObj.CompareTag("SoilParticle")) return;
-
         if (!soilObj.TryGetComponent<Rigidbody>(out var rb) ||
             !soilObj.TryGetComponent<Collider>(out var col)) return;
 
@@ -130,6 +129,7 @@ public class BucketGrabberMultiMerged : MonoBehaviour
             }
         }
     }
+
 
     private class ZoneForwarderMerged : MonoBehaviour
     {

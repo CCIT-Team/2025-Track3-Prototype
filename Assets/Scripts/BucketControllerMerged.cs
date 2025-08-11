@@ -107,6 +107,7 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     {
         UpdateMode();
         DetectDig();
+
         if (!isDigging || _modeCtrl.CurrentMode != BucketGrabberMultiMerged.Mode.Dig)
             return;
 
