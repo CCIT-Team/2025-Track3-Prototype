@@ -168,8 +168,10 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
             int height = z1 - z0 + 1;
             SmoothRegion(x0, z0, width, height, heights);
         }
+
         _terrainData.SetHeights(0, 0, heights);
     }
+
     private void RelaxSlope(float[,] heights, int res, int cx, int cz, float cellX, float cellZ)
     {
         int rPx = Mathf.CeilToInt(relaxRadius / cellX);
