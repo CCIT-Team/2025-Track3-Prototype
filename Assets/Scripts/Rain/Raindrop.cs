@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Raindrop : MonoBehaviour, IPoolable
+public class Raindrop : MonoBehaviour,  IPoolable
 {
     [SerializeField]
     private float _waitTime = 10;
@@ -42,5 +42,16 @@ public class Raindrop : MonoBehaviour, IPoolable
         _coroutine = StartCoroutine(ReturnSelf());
         _rb.velocity = _initialVelocity;
         
+    }
+
+    private bool _isPooled = false;
+    public bool IsPooled()
+    {
+        return _isPooled;
+    }
+
+    public void SetPooled(bool option)
+    {
+        _isPooled = option;
     }
 }

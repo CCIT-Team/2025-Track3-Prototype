@@ -189,15 +189,19 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
 
             // 5) 생성
             float y = terrain.SampleHeight(new Vector3(x, 0f, z)) + tPos.y + 0.5f;
-            var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
+            //var go = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
+            var go = _pool.GetGameObject();
+            go.transform.position = new Vector3(x, y, z);
+            go.transform.rotation = Quaternion.identity;
+
 
             // 6) (Optional) SoilParticleMerged에 레이어 정보 전달
             if (go.TryGetComponent<SoilParticleMerged>(out var p))
                 p.SetLayer(terrain.terrainData.terrainLayers[dominantLayer]);
 
             // 7) 물리 설정
-            if (go.TryGetComponent<Rigidbody>(out var rb))
-                rb.mass = 0.1f;
+            //soilparticlemerged로 이전
+
         }
     }
 
@@ -239,4 +243,8 @@ public class BucketControllerMerged : MonoBehaviour, IPoolable
     // IPoolable
     public void SetPoolInstance(GameObjectPool pool) => _pool = pool;
     public bool ComparePoolInstance(GameObjectPool pool) => _pool == pool;
+
+    public bool IsPooled() => true;
+    
+    public void SetPooled(bool option) { }
 }

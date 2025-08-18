@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1500908244782205012}
   - component: {fileID: 1514004845803580630}
+  - component: {fileID: 1220535732891525357}
   m_Layer: 0
   m_Name: GrabZone1
   m_TagString: Untagged
@@ -53,6 +54,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2, y: 0.3, z: 0.85}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1220535732891525357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91420520911879063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ddd670c03cc9de40b5d04a2029abd47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &165702658059121791
 GameObject:
   m_ObjectHideFlags: 0
@@ -762,6 +775,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3430412024552193462}
   - component: {fileID: 595709250285886900}
+  - component: {fileID: 4955821719788020860}
   m_Layer: 0
   m_Name: GrabZone2
   m_TagString: Untagged
@@ -805,6 +819,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2, y: 0.4, z: 0.65}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4955821719788020860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 636559545367333550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ddd670c03cc9de40b5d04a2029abd47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &710329753650387130
 GameObject:
   m_ObjectHideFlags: 0
@@ -2547,7 +2573,7 @@ GameObject:
   - component: {fileID: 1985369654434012216}
   - component: {fileID: 1801030754129906507}
   - component: {fileID: 7155719053313352512}
-  - component: {fileID: 4218254789841110026}
+  - component: {fileID: 6884767015159607267}
   m_Layer: 0
   m_Name: Excavator
   m_TagString: Untagged
@@ -2699,7 +2725,7 @@ MonoBehaviour:
   minBucketAngle: -90
   maxBucketAngle: 90
   bucketAngle: 0
---- !u!114 &4218254789841110026
+--- !u!114 &6884767015159607267
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2708,7 +2734,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2650856205343688934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 805b6d3e1a9e1ee429251137a2413deb, type: 3}
+  m_Script: {fileID: 11500000, guid: 3412238f03576fd469ea48ee6c3d2cd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   leftWheels:
@@ -2725,7 +2751,7 @@ MonoBehaviour:
   - {fileID: 3848202663499853014}
   motorTorque: 500
   brakeTorque: 1000
-  body: {fileID: 1801030754129906507}
+  body: {fileID: 0}
 --- !u!1 &2783130595077869356
 GameObject:
   m_ObjectHideFlags: 0
@@ -5180,7 +5206,7 @@ MonoBehaviour:
   particlePerCubicM: 10
   soilPrefabs:
   - {fileID: 34134065779573551, guid: 5355bdff1f52a854b9967a2eeb5b7cd9, type: 3}
-  maxParticlesPerFrame: 500
+  maxParticlesPerFrame: 200
   depthOffset: 0.1
   terrainLayer:
     serializedVersion: 2
@@ -5214,7 +5240,7 @@ MonoBehaviour:
   - {fileID: 1514004845803580630}
   - {fileID: 595709250285886900}
   - {fileID: 8427139819682140711}
-  zoneCapacities: 1e0000001e0000001e000000
+  zoneCapacities: 3c0000003c0000003c000000
   soilLayer:
     serializedVersion: 2
     m_Bits: 16
@@ -8804,6 +8830,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1524805292112385209}
   - component: {fileID: 8427139819682140711}
+  - component: {fileID: 5437621040745099981}
   m_Layer: 0
   m_Name: GrabZone3
   m_TagString: Untagged
@@ -8847,6 +8874,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2, y: 0.4, z: 0.4}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5437621040745099981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6446571435746218181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ddd670c03cc9de40b5d04a2029abd47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6498990297721988430
 GameObject:
   m_ObjectHideFlags: 0
@@ -10376,13 +10415,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7501519309011053187}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.061378483, y: -0, z: -0, w: 0.9981146}
-  m_LocalPosition: {x: 0, y: -1.326, z: -1.023}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.32168737, y: 0, z: 0, w: 0.94684595}
+  m_LocalPosition: {x: 0, y: -0.97, z: -0.34}
+  m_LocalScale: {x: 1, y: 1, z: 4.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1705881758726578514}
-  m_LocalEulerAnglesHint: {x: -7.038, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -37.53, y: 0, z: 0}
 --- !u!65 &4675866401430129463
 BoxCollider:
   m_ObjectHideFlags: 0
