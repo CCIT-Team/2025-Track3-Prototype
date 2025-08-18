@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class SoilParticleMerged : MonoBehaviour
+public class SoilParticleMerged : MonoBehaviour, IPoolable
 {
     [Header("Friction Coefficients")]
     [SerializeField, Tooltip("Static friction coefficient (μ)")] private float staticFriction = 1.2f;
@@ -54,8 +54,9 @@ public class SoilParticleMerged : MonoBehaviour
 
     // IPoolable (optional): 제거 로직에서 활용하지 않으면 생략 가능
     private GameObjectPool _pool;
-    public void SetPoolInstance(GameObjectPool pool) => _pool = pool;
-    public bool ComparePoolInstance(GameObjectPool pool) => _pool == pool;
+
+    private bool _isPooled = false;
+
 
     void Awake()
     {
@@ -141,9 +142,20 @@ public class SoilParticleMerged : MonoBehaviour
         return false;
     }
 
+    void OnEnable()
+    {
+        _isTouchingBucket = false;
+        _col.enabled = true;
+        _rb.isKinematic = false;
+        _rb.constraints = RigidbodyConstraints.None;
+        _rb.mass = 0.1f;
+        gameObject.tag = "SoilParticle";
+    }
+
     private void DestroySelf()
     {
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        _pool.ReturnGameObject(gameObject);
     }
 
     void OnTriggerEnter(Collider other)
@@ -247,5 +259,25 @@ public class SoilParticleMerged : MonoBehaviour
         }
         if (col.collider.CompareTag("SoilParticle"))
             _rb.constraints = RigidbodyConstraints.None;
+    }
+
+    public void SetPoolInstance(GameObjectPool poolInstance)
+    {
+        _pool = poolInstance;
+    }
+
+    public bool ComparePoolInstance(GameObjectPool poolInstance)
+    {
+        return _pool == poolInstance;
+    }
+
+    public bool IsPooled()
+    {
+        return _isPooled;
+    }
+
+    public void SetPooled(bool option)
+    {
+        _isPooled = option;
     }
 }

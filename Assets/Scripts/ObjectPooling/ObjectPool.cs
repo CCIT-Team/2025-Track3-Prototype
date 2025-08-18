@@ -51,6 +51,8 @@ public class GameObjectPool
         }
 
         poolableInterface.SetPoolInstance(this);
+        poolableInterface.SetPooled(true);
+
         return spawnedObject;
     }
 
@@ -86,6 +88,13 @@ public class GameObjectPool
 
         IPoolable poolableInterface = returnedObject.GetComponent<IPoolable>();
 
+        if (poolableInterface.IsPooled())
+        {
+            return;
+        }
+
+        poolableInterface.SetPooled(true);
+
         if (poolableInterface == null || !poolableInterface.ComparePoolInstance(this))
         {
             return;
@@ -120,6 +129,8 @@ public class GameObjectPool
         {
             selectedGameObject.SetActive(true);
         }
+
+        selectedGameObject.GetComponent<IPoolable>().SetPooled(false);
 
         return selectedGameObject;
     }

@@ -67,4 +67,16 @@ public class PilableParticle : MonoBehaviour, IPoolable
     {
         return _pool == poolInstance;
     }
+
+    private bool _isPooled = false;
+
+    public bool IsPooled()
+    {
+        return _isPooled;
+    }
+
+    public void SetPooled(bool option)
+    {
+        _isPooled = option;
+    }
 }

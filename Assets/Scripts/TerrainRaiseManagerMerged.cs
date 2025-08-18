@@ -74,7 +74,8 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
 
             if (wpos.y < surfaceY - destroyBelowOffset)
             {
-                Destroy(sp.gameObject);
+                //Destroy(sp.gameObject);
+                _pool.ReturnGameObject(sp.gameObject);
                 continue;
             }
             if (wpos.y > surfaceY + maxBakeHeightAboveGround)
@@ -92,6 +93,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
         {
             if (sp == null) continue;
             var go = sp.gameObject;
+            /*
             var col = go.GetComponent<Collider>(); if (col) col.enabled = false;
             var rb = go.GetComponent<Rigidbody>(); if (rb)
             {
@@ -101,7 +103,9 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
                 rb.detectCollisions = false;
             }
             go.SetActive(false);
-            Destroy(go);
+            */
+            //Destroy(go);
+            _pool.ReturnGameObject(go);
         }
     }
 
@@ -250,4 +254,7 @@ public class TerrainRaiseManagerMerged : MonoBehaviour, IPoolable
     // IPoolable 구현
     public void SetPoolInstance(GameObjectPool poolInstance) => _pool = poolInstance;
     public bool ComparePoolInstance(GameObjectPool poolInstance) => _pool == poolInstance;
+    public bool IsPooled() => true;
+
+    public void SetPooled(bool option) { }
 }
