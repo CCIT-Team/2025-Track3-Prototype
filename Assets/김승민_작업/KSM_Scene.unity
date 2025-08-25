@@ -275,97 +275,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &672159830
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 672159832}
-  - component: {fileID: 672159831}
-  m_Layer: 0
-  m_Name: Dynamic Waves Simulation Zone
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &672159831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 672159830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d5c0df90d3929b46942933c33cae326, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ZoneType: 0
-  FollowObject: {fileID: 0}
-  IntersectionLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967279
-  SimulationResolutionPerMeter: 2.5
-  FlowSpeedMultiplier: 1
-  FoamStrengthRiver: 0.04
-  FoamStrengthShoreline: 0.2
-  FoamDissappearSpeed: 1
-  UseFoamParticles: 1
-  MaxFoamParticlesBudget: 500000
-  FoamParticlesScale: 0.865
-  FoamParticlesAlphaMultiplier: 1
-  RiverEmissionRateFoam: 0.5
-  ShorelineEmissionRateFoam: 0.5
-  UsePhytoplanktonEmission: 0
-  UseSplashParticles: 1
-  MaxSplashParticlesBudget: 15000
-  SplashParticlesScale: 1
-  SplashParticlesAlphaMultiplier: 0.8
-  RiverEmissionRateSplash: 0.2
-  ShorelineEmissionRateSplash: 0.5
-  WaterfallEmissionRateSplash: 1
-  CastShadowMode: 1
-  ReceiveShadowMode: 2
-  ShowSimulationSettings: 1
-  ShowFoamParticlesSettings: 1
-  ShowSplashSettings: 1
-  SavedDepth: {fileID: 710460653746822735, guid: 5af651d29d9eac248a375a19e14332a3, type: 3}
-  SavedDistanceField: {fileID: 710460653746822735, guid: 98862c1e8f4931e4792b71c30bb5ac28, type: 3}
-  SavedDynamicWavesSimulation: {fileID: 710460653746822735, guid: 802855f9fed03144b8ff21dc15765fe7, type: 3}
-  BakedAreaPos: {x: 410.4, y: 145.5, z: 250.20001}
-  BakedAreaSize: {x: 65.87001, y: 280.68, z: 77.68709}
-  BakedAreaRotation: {x: 0, y: 0.7071253, z: 0, w: 0.7070883}
-  BakedRotationMatrix: {x: -0.00005237659, y: 1, z: -1, w: -0.00005237659}
-  BakedNearFarSizeXZ: {x: 285.84, y: 280.68, z: 65.87001, w: 77.68709}
-  BakedTextureSize: {x: 168, y: 196}
-  bakedBounds:
-    m_Center: {x: 410.4, y: 145.5, z: 250.20001}
-    m_Extent: {x: 32.935005, y: 140.34, z: 38.843544}
-  bakedOrientedBounds:
-    m_Center: {x: 410.40002, y: 145.5, z: 250.20001}
-    m_Extent: {x: 38.845276, y: 140.34, z: 32.937042}
-  bakedSimSize: 2.5
-  bakedWaterLevel: 45.7
-  IsBakeMode: 0
---- !u!4 &672159832
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 672159830}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071253, z: 0, w: 0.7070883}
-  m_LocalPosition: {x: 410.4, y: 145.5, z: 250.20001}
-  m_LocalScale: {x: 65.87001, y: 280.68, z: 77.68709}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 90.003, z: 0}
 --- !u!1 &775196730
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,109 +550,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!1 &1486819794
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1486819796}
-  - component: {fileID: 1486819795}
-  m_Layer: 4
-  m_Name: Main Water System
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1486819795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1486819794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb560ae5ebcd8459ef03cd3eccbd16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Transparent: 19.1
-  WaterColor: {r: 1, g: 1, b: 1, a: 1}
-  TurbidityColor: {r: 0.17065683, g: 0.5395727, b: 0.5566038, a: 1}
-  WindSpeed: 3
-  WindRotation: 251
-  WindTurbulence: 0.097
-  FftWavesQuality: 256
-  FftWavesCascades: 4
-  WavesAreaScale: 1
-  WavesTimeScale: 1
-  WindZone: {fileID: 0}
-  WindZoneSpeedMultiplier: 1
-  WindZoneTurbulenceMultiplier: 1
-  ScreenSpaceReflection: 0
-  PlanarReflection: 0
-  AnisotropicReflectionsScale: 0.5
-  OverrideSkyColor: 0
-  CustomSkyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  ReflectSun: 1
-  ReflectedSunCloudinessStrength: 0.04
-  ReflectedSunStrength: 1
-  RefractionMode: 1
-  RefractionAproximatedDepth: 3
-  RefractionSimpleStrength: 0.25
-  RefractionDispersion: 0
-  RefractionDispersionStrength: 0.25
-  OceanFoam: 0
-  OceanFoamStrength: 0.515
-  OceanFoamDisappearSpeedMultiplier: 0.5
-  OceanFoamTextureSize: 30
-  WetEffect: 0
-  WetStrength: 1
-  WetnessHeightAboveWater: 2
-  VolumetricLighting: 0
-  VolumetricLightTemporalReprojectionAccumulationFactor: 0.35
-  VolumetricLightUseBlur: 0
-  VolumetricLightBlurRadius: 2
-  VolumetricLightUseAdditionalLightsCaustic: 0
-  CausticEffect: 0
-  CausticDepth: 4
-  CausticStrength: 4
-  UnderwaterEffect: 0
-  UnderwaterReflectionMode: 1
-  UseUnderwaterHalfLineTensionEffect: 1
-  UseWaterDropsEffect: 1
-  UnderwaterHalfLineTensionScale: 0.5
-  OverrideUnderwaterTransparent: 0
-  UnderwaterTransparentOffset: 5
-  ShowColorSettings: 1
-  ShowWavesSettings: 1
-  ShowReflectionSettings: 0
-  ShowRefractionSettings: 1
-  ShowFoamSettings: 1
-  ShowWetSettings: 1
-  ShowVolumetricSettings: 0
-  ShowCausticEffectSettings: 1
-  ShowUnderwaterEffectSettings: 0
-  AutoUpdateIntersections: 1
-  WaterRenderingActive: 1
---- !u!4 &1486819796
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1486819794}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 245.9571, y: 45.7, z: 286.6348}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1502531104
 GameObject:
   m_ObjectHideFlags: 0
@@ -999,66 +805,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!1 &1527283937
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1527283939}
-  - component: {fileID: 1527283938}
-  m_Layer: 0
-  m_Name: Dynamic Waves Object
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1527283938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527283937}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ec5eaf4484e27646a43c5153ca2674d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractionType: 0
-  ForceType: 0
-  UseWaterSurfaceIntersection: 0
-  MotionForce: 1
-  ConstantForce: 0
-  MotionFlowRate: 0
-  ConstantFlowRate: 0.1
-  ConstantDrainRate: 0.1
-  UseMeshFilterAsSource: 1
-  OverrideObstacleMesh: {fileID: 0}
-  MeshOffset: {x: 0, y: 0, z: 0}
-  MeshScale: {x: 1, y: 1, z: 1}
-  VelocityStrengthMultiplier: 1
-  UseTransformForwardVelocity: 0
-  UseSourceColor: 0
-  SourceColor: {r: 0.2, g: 0, b: 0.01, a: 1}
---- !u!4 &1527283939
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527283937}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 384.4, y: 180.4, z: 254.71}
-  m_LocalScale: {x: 100, y: 100, z: 100}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2129525759
 GameObject:
   m_ObjectHideFlags: 0
@@ -4314,7 +4060,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   bucketColliders: []
-  terrainCollider: {fileID: 5353222305570591062}
+  terrainCollider: {fileID: 0}
 --- !u!23 &808613461327079929
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5239,6 +4985,23 @@ GameObject:
   - component: {fileID: 4718174585625360239}
   m_Layer: 0
   m_Name: LeftTrackpiece 38
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &957807642999203321
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3116205833290601825}
+  - component: {fileID: 6087596743336026946}
+  m_Layer: 4
+  m_Name: KSM_Main Water System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12193,6 +11956,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerOfMassOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &2951605532431997218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738103638737378200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5309b0efc581f0c40ba14ef0df277d32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrain: {fileID: 8818058489731731397}
+  autoBakeEnabled: 1
+  autoBakeInterval: 5
+  maxBakeHeightAboveGround: 500
+  bakeVelocityThreshold: 0.1
+  defaultBakeRadius: 100
+  defaultHeightOffset: 1500
+  destroyBelowOffset: 0.1
+  dustVFXPrefab: {fileID: 0}
+  relaxRadius: 2
+  maxSlopeAngleDeg: 35
+  relaxStrength: 0.01
 --- !u!1 &2959661379133587148
 GameObject:
   m_ObjectHideFlags: 0
@@ -12430,6 +12217,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!4 &3066399417982230026
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6986497537435795496}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071253, z: 0, w: 0.7070883}
+  m_LocalPosition: {x: 410.4, y: 145.5, z: 251.9}
+  m_LocalScale: {x: 65.87001, y: 280.68, z: 77.68709}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90.003, z: 0}
 --- !u!1 &3070344932051177955
 GameObject:
   m_ObjectHideFlags: 0
@@ -12484,6 +12286,34 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &3082552951726573185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6694242407159543137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ec5eaf4484e27646a43c5153ca2674d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InteractionType: 0
+  ForceType: 0
+  UseWaterSurfaceIntersection: 0
+  MotionForce: 1
+  ConstantForce: 0
+  MotionFlowRate: 0
+  ConstantFlowRate: 0.1
+  ConstantDrainRate: 0.1
+  UseMeshFilterAsSource: 1
+  OverrideObstacleMesh: {fileID: 0}
+  MeshOffset: {x: 0, y: 0, z: 0}
+  MeshScale: {x: 1, y: 1, z: 1}
+  VelocityStrengthMultiplier: 1
+  UseTransformForwardVelocity: 0
+  UseSourceColor: 0
+  SourceColor: {r: 0.2, g: 0, b: 0.01, a: 1}
 --- !u!1 &3087054067957392520
 GameObject:
   m_ObjectHideFlags: 0
@@ -12578,6 +12408,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6456781953897382603}
   m_Mesh: {fileID: 6255687079079774844, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
+--- !u!4 &3116205833290601825
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957807642999203321}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 245.9571, y: 45.7, z: 286.6348}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3120531803770371867
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -13088,30 +12933,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &3282775678843465607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5993821862915796726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5309b0efc581f0c40ba14ef0df277d32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 8246249363622289066}
-  autoBakeEnabled: 1
-  autoBakeInterval: 5
-  maxBakeHeightAboveGround: 500
-  bakeVelocityThreshold: 0.1
-  defaultBakeRadius: 100
-  defaultHeightOffset: 1500
-  destroyBelowOffset: 0.1
-  dustVFXPrefab: {fileID: 0}
-  relaxRadius: 2
-  maxSlopeAngleDeg: 35
-  relaxStrength: 0.01
 --- !u!4 &3286662940208520157
 Transform:
   m_ObjectHideFlags: 0
@@ -16670,6 +16491,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4307268772208321288
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738103638737378200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 264.5, y: 10, z: 105}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &4314441751083925642
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -16834,8 +16670,8 @@ MonoBehaviour:
     m_Bits: 8
   dustVFXPrefab: {fileID: 97370009020866654, guid: 3cb28cbc25013e94594fb8e175f05c22, type: 3}
   vfxCooldown: 0.5
-  deformManager: {fileID: 6573895740700085708}
-  terrain: {fileID: 8246249363622289066}
+  deformManager: {fileID: 0}
+  terrain: {fileID: 0}
   excavatorControllerPublic: {fileID: 1850676689237762960}
   excavatorControllerPoly: {fileID: 0}
   _mats:
@@ -16866,6 +16702,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3913032504962782132}
   m_Mesh: {fileID: 4723010164368009254, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
+--- !u!4 &4400943959544887097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6694242407159543137}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 389.3, y: 169.9, z: 258.1}
+  m_LocalScale: {x: 100, y: 59.9, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4403761427181758558
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -17312,21 +17163,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &4497449831090917172
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5993821862915796726}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 264.5, y: 10, z: 105}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4504187856724478784
 Transform:
   m_ObjectHideFlags: 0
@@ -18552,6 +18388,27 @@ Transform:
   - {fileID: 4013182816592381731}
   m_Father: {fileID: 7700576840871025377}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4738103638737378200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4307268772208321288}
+  - component: {fileID: 8818058489731731397}
+  - component: {fileID: 6077740755968718615}
+  - component: {fileID: 8883624728741613351}
+  - component: {fileID: 2951605532431997218}
+  - component: {fileID: 8999213176451635147}
+  m_Layer: 3
+  m_Name: KSM_Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
 --- !u!23 &4752910281033330138
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -20159,26 +20016,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 217034437632100134}
   m_Mesh: {fileID: 4422161974729816637, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
---- !u!154 &5353222305570591062
-TerrainCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5993821862915796726}
-  m_Material: {fileID: 13400000, guid: 511faff1e7326bf4fa64f852a2f4c4b4, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: a86d6f9d86849e147a0783aa498a4a94, type: 2}
-  m_EnableTreeColliders: 1
 --- !u!33 &5355203445616445800
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -22077,27 +21914,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5274384385806004563}
   m_Mesh: {fileID: 6800249751854360846, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
---- !u!1 &5993821862915796726
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4497449831090917172}
-  - component: {fileID: 8246249363622289066}
-  - component: {fileID: 5353222305570591062}
-  - component: {fileID: 6573895740700085708}
-  - component: {fileID: 3282775678843465607}
-  - component: {fileID: 7972549288085354932}
-  m_Layer: 3
-  m_Name: Ground_JH
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
 --- !u!4 &6010713019908085128
 Transform:
   m_ObjectHideFlags: 0
@@ -22333,6 +22149,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!154 &6077740755968718615
+TerrainCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738103638737378200}
+  m_Material: {fileID: 13400000, guid: 9d7fd9c72cbdebc4398bc4b61323dcca, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_TerrainData: {fileID: 15600000, guid: a86d6f9d86849e147a0783aa498a4a94, type: 2}
+  m_EnableTreeColliders: 1
 --- !u!23 &6078178183235964589
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -22383,6 +22219,77 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5563681017764113967}
   m_Mesh: {fileID: -6238695267478471857, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
+--- !u!114 &6087596743336026946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957807642999203321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93eb560ae5ebcd8459ef03cd3eccbd16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Transparent: 19.1
+  WaterColor: {r: 1, g: 1, b: 1, a: 1}
+  TurbidityColor: {r: 0.17065683, g: 0.5395727, b: 0.5566038, a: 1}
+  WindSpeed: 3
+  WindRotation: 251
+  WindTurbulence: 0.097
+  FftWavesQuality: 256
+  FftWavesCascades: 4
+  WavesAreaScale: 1
+  WavesTimeScale: 1
+  WindZone: {fileID: 0}
+  WindZoneSpeedMultiplier: 1
+  WindZoneTurbulenceMultiplier: 1
+  ScreenSpaceReflection: 0
+  PlanarReflection: 0
+  AnisotropicReflectionsScale: 0.5
+  OverrideSkyColor: 0
+  CustomSkyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  ReflectSun: 1
+  ReflectedSunCloudinessStrength: 0.04
+  ReflectedSunStrength: 1
+  RefractionMode: 1
+  RefractionAproximatedDepth: 3
+  RefractionSimpleStrength: 0.25
+  RefractionDispersion: 0
+  RefractionDispersionStrength: 0.25
+  OceanFoam: 0
+  OceanFoamStrength: 0.515
+  OceanFoamDisappearSpeedMultiplier: 0.5
+  OceanFoamTextureSize: 30
+  WetEffect: 0
+  WetStrength: 1
+  WetnessHeightAboveWater: 2
+  VolumetricLighting: 0
+  VolumetricLightTemporalReprojectionAccumulationFactor: 0.35
+  VolumetricLightUseBlur: 0
+  VolumetricLightBlurRadius: 2
+  VolumetricLightUseAdditionalLightsCaustic: 0
+  CausticEffect: 0
+  CausticDepth: 4
+  CausticStrength: 4
+  UnderwaterEffect: 0
+  UnderwaterReflectionMode: 1
+  UseUnderwaterHalfLineTensionEffect: 1
+  UseWaterDropsEffect: 1
+  UnderwaterHalfLineTensionScale: 0.5
+  OverrideUnderwaterTransparent: 0
+  UnderwaterTransparentOffset: 5
+  ShowColorSettings: 1
+  ShowWavesSettings: 1
+  ShowReflectionSettings: 0
+  ShowRefractionSettings: 1
+  ShowFoamSettings: 1
+  ShowWetSettings: 1
+  ShowVolumetricSettings: 0
+  ShowCausticEffectSettings: 1
+  ShowUnderwaterEffectSettings: 0
+  AutoUpdateIntersections: 1
+  WaterRenderingActive: 1
 --- !u!4 &6091176522412360243
 Transform:
   m_ObjectHideFlags: 0
@@ -23904,23 +23811,6 @@ Transform:
   - {fileID: 6878541684809593833}
   m_Father: {fileID: 4276911213461036432}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6573895740700085708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5993821862915796726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d94ad0b021eb4ac4ba52572e2069083e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _terrain: {fileID: 8246249363622289066}
-  _terrainData: {fileID: 15600000, guid: 916692afb70e4d246bcf417400d5dad4, type: 2}
-  maxCellsPerBatch: 1024
-  _diggedTextureMin: 0
-  _diggedTextureMax: 1
 --- !u!1 &6580284789859810474
 GameObject:
   m_ObjectHideFlags: 0
@@ -24171,6 +24061,23 @@ GameObject:
   - component: {fileID: 5913258124051404630}
   m_Layer: 0
   m_Name: LeftTrackpiece 19
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &6694242407159543137
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4400943959544887097}
+  - component: {fileID: 3082552951726573185}
+  m_Layer: 0
+  m_Name: KSM_Dynamic Waves Object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25109,6 +25016,23 @@ Transform:
   - {fileID: 6187539677729479975}
   m_Father: {fileID: 5803608232262007732}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6986497537435795496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3066399417982230026}
+  - component: {fileID: 7635179233805531896}
+  m_Layer: 0
+  m_Name: KSM_Dynamic Waves Simulation Zone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!23 &6999042407865562083
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -26688,6 +26612,65 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7635179233805531896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6986497537435795496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d5c0df90d3929b46942933c33cae326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ZoneType: 0
+  FollowObject: {fileID: 0}
+  IntersectionLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967279
+  SimulationResolutionPerMeter: 2.5
+  FlowSpeedMultiplier: 1
+  FoamStrengthRiver: 0.04
+  FoamStrengthShoreline: 0.2
+  FoamDissappearSpeed: 1
+  UseFoamParticles: 1
+  MaxFoamParticlesBudget: 500000
+  FoamParticlesScale: 0.865
+  FoamParticlesAlphaMultiplier: 1
+  RiverEmissionRateFoam: 0.5
+  ShorelineEmissionRateFoam: 0.5
+  UsePhytoplanktonEmission: 0
+  UseSplashParticles: 1
+  MaxSplashParticlesBudget: 15000
+  SplashParticlesScale: 1
+  SplashParticlesAlphaMultiplier: 0.8
+  RiverEmissionRateSplash: 0.2
+  ShorelineEmissionRateSplash: 0.5
+  WaterfallEmissionRateSplash: 1
+  CastShadowMode: 1
+  ReceiveShadowMode: 2
+  ShowSimulationSettings: 1
+  ShowFoamParticlesSettings: 1
+  ShowSplashSettings: 1
+  SavedDepth: {fileID: 710460653746822735, guid: 5af651d29d9eac248a375a19e14332a3, type: 3}
+  SavedDistanceField: {fileID: 710460653746822735, guid: 98862c1e8f4931e4792b71c30bb5ac28, type: 3}
+  SavedDynamicWavesSimulation: {fileID: 710460653746822735, guid: 802855f9fed03144b8ff21dc15765fe7, type: 3}
+  BakedAreaPos: {x: 410.4, y: 145.5, z: 251.9}
+  BakedAreaSize: {x: 65.87001, y: 280.68, z: 77.68709}
+  BakedAreaRotation: {x: 0, y: 0.7071253, z: 0, w: 0.7070883}
+  BakedRotationMatrix: {x: -0.00005237659, y: 1, z: -1, w: -0.00005237659}
+  BakedNearFarSizeXZ: {x: 285.84, y: 280.68, z: 65.87001, w: 77.68709}
+  BakedTextureSize: {x: 168, y: 196}
+  bakedBounds:
+    m_Center: {x: 410.4, y: 145.5, z: 251.9}
+    m_Extent: {x: 32.935005, y: 140.34, z: 38.843544}
+  bakedOrientedBounds:
+    m_Center: {x: 410.40002, y: 145.5, z: 251.9}
+    m_Extent: {x: 38.845276, y: 140.34, z: 32.937042}
+  bakedSimSize: 2.5
+  bakedWaterLevel: 45.7
+  IsBakeMode: 0
 --- !u!1 &7637501810640937075
 GameObject:
   m_ObjectHideFlags: 0
@@ -28113,26 +28096,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &7972549288085354932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5993821862915796726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dbc5b71df895d24899e63566156b2b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useFlatBaseline: 0
-  baselineNorm: 0
-  useSourceCopy: 0
-  sourceTerrain: {fileID: 8246249363622289066}
-  resetTextures: 0
-  defaultTextureLayerIndex: 0
-  terrainStaticFriction: 1
-  terrainDynamicFriction: 1
 --- !u!33 &7982928732249444803
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -29000,46 +28963,6 @@ Transform:
   - {fileID: 1154408985540500457}
   m_Father: {fileID: 6184334698300267018}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!218 &8246249363622289066
-Terrain:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5993821862915796726}
-  m_Enabled: 1
-  serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: a86d6f9d86849e147a0783aa498a4a94, type: 2}
-  m_TreeDistance: 5000
-  m_TreeBillboardDistance: 50
-  m_TreeCrossFadeLength: 5
-  m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
-  m_DetailObjectDensity: 1
-  m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
-  m_HeightmapMinimumLODSimplification: 0
-  m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 2
-  m_DrawHeightmap: 1
-  m_DrawInstanced: 0
-  m_DrawTreesAndFoliage: 1
-  m_StaticShadowCaster: 0
-  m_IgnoreQualitySettings: 0
-  m_ReflectionProbeUsage: 0
-  m_MaterialTemplate: {fileID: 2100000, guid: 5fc7743a543b33d4fa6aa6beb8a14742, type: 2}
-  m_BakeLightProbesForTrees: 1
-  m_PreserveTreePrototypeLayers: 0
-  m_DeringLightProbesForTrees: 1
-  m_ReceiveGI: 1
-  m_ScaleInLightmap: 1
-  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
-  m_GroupingID: 0
-  m_RenderingLayerMask: 1
-  m_AllowAutoConnect: 0
-  m_EnableHeightmapRayTracing: 1
-  m_EnableTreesAndDetailsRayTracing: 0
-  m_TreeMotionVectorModeOverride: 3
 --- !u!1 &8271377564496941695
 GameObject:
   m_ObjectHideFlags: 0
@@ -30764,6 +30687,46 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 848783139854226647}
   m_Mesh: {fileID: -5746147162638082140, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
+--- !u!218 &8818058489731731397
+Terrain:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738103638737378200}
+  m_Enabled: 1
+  serializedVersion: 6
+  m_TerrainData: {fileID: 15600000, guid: a86d6f9d86849e147a0783aa498a4a94, type: 2}
+  m_TreeDistance: 5000
+  m_TreeBillboardDistance: 50
+  m_TreeCrossFadeLength: 5
+  m_TreeMaximumFullLODCount: 50
+  m_DetailObjectDistance: 80
+  m_DetailObjectDensity: 1
+  m_HeightmapPixelError: 5
+  m_SplatMapDistance: 1000
+  m_HeightmapMinimumLODSimplification: 0
+  m_HeightmapMaximumLOD: 0
+  m_ShadowCastingMode: 2
+  m_DrawHeightmap: 1
+  m_DrawInstanced: 0
+  m_DrawTreesAndFoliage: 1
+  m_StaticShadowCaster: 0
+  m_IgnoreQualitySettings: 0
+  m_ReflectionProbeUsage: 0
+  m_MaterialTemplate: {fileID: 2100000, guid: 5fc7743a543b33d4fa6aa6beb8a14742, type: 2}
+  m_BakeLightProbesForTrees: 1
+  m_PreserveTreePrototypeLayers: 0
+  m_DeringLightProbesForTrees: 1
+  m_ReceiveGI: 1
+  m_ScaleInLightmap: 1
+  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
+  m_GroupingID: 0
+  m_RenderingLayerMask: 1
+  m_AllowAutoConnect: 0
+  m_EnableHeightmapRayTracing: 1
+  m_EnableTreesAndDetailsRayTracing: 0
+  m_TreeMotionVectorModeOverride: 3
 --- !u!1 &8824262259456177682
 GameObject:
   m_ObjectHideFlags: 0
@@ -31113,6 +31076,23 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4218273440451852270}
   m_Mesh: {fileID: -7670247711816762793, guid: eb4cd2eb849dc784e990c19042dae05b, type: 3}
+--- !u!114 &8883624728741613351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738103638737378200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d94ad0b021eb4ac4ba52572e2069083e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _terrain: {fileID: 8818058489731731397}
+  _terrainData: {fileID: 15600000, guid: c5073292f7bca62418fd49e2606a5822, type: 2}
+  maxCellsPerBatch: 1024
+  _diggedTextureMin: 0
+  _diggedTextureMax: 1
 --- !u!4 &8890018891520114867
 Transform:
   m_ObjectHideFlags: 0
@@ -31582,6 +31562,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8999213176451635147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4738103638737378200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dbc5b71df895d24899e63566156b2b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useFlatBaseline: 0
+  baselineNorm: 0
+  useSourceCopy: 0
+  sourceTerrain: {fileID: 8818058489731731397}
+  resetTextures: 0
+  defaultTextureLayerIndex: 0
+  terrainStaticFriction: 1
+  terrainDynamicFriction: 1
 --- !u!4 &9010785856492926850
 Transform:
   m_ObjectHideFlags: 0
@@ -32429,13 +32429,13 @@ SceneRoots:
   m_Roots:
   - {fileID: 1523845032}
   - {fileID: 775196733}
-  - {fileID: 4497449831090917172}
+  - {fileID: 4307268772208321288}
   - {fileID: 7382581934551505545}
   - {fileID: 5729378009795737771}
   - {fileID: 1435779626}
   - {fileID: 600515139}
   - {fileID: 2586242752675334045}
-  - {fileID: 1527283939}
-  - {fileID: 672159832}
-  - {fileID: 1486819796}
+  - {fileID: 4400943959544887097}
+  - {fileID: 3066399417982230026}
+  - {fileID: 3116205833290601825}
   - {fileID: 2129525760}
