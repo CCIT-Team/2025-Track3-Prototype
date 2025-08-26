@@ -64,7 +64,7 @@ namespace WrightAngle.Waypoint
         /// <param name="cam">The reference camera used for calculations.</param>
         /// <param name="settings">The active WaypointSettings asset providing configuration.</param>
         /// <param name="distanceToTarget">The world-space distance from the camera to the waypoint target.</param>
-        public void UpdateDisplay(Vector3 screenPosition, bool isOnScreen, bool isBehindCamera, Camera cam, WaypointSettings settings, float distanceToTarget)
+        public void UpdateDisplay(Vector2 anchoredPosition, bool isOnScreen, bool isBehindCamera, Camera cam, WaypointSettings settings, float distanceToTarget)
         {
             // Safety checks for required components and settings
             if (settings == null || rectTransform == null || cam == null) // markerIcon can be null if not essential
@@ -94,7 +94,7 @@ namespace WrightAngle.Waypoint
             if (isOnScreen)
             {
                 // --- Target ON Screen ---
-                rectTransform.position = screenPosition;
+                rectTransform.anchoredPosition = anchoredPosition;
                 rectTransform.rotation = Quaternion.identity; // Ensure parent (main marker) is upright on screen
                 if (markerIcon != null && !markerIcon.gameObject.activeSelf && isMarkerVisible) markerIcon.gameObject.SetActive(true);
             }
@@ -113,12 +113,12 @@ namespace WrightAngle.Waypoint
                 float margin = settings.ScreenEdgeMargin;
                 Vector2 screenCenter = new Vector2(cam.pixelWidth * 0.5f, cam.pixelHeight * 0.5f);
                 Rect screenBounds = new Rect(margin, margin, cam.pixelWidth - (margin * 2f), cam.pixelHeight - (margin * 2f));
-                Vector3 positionToClamp;
+                Vector2 positionToClamp;
                 Vector2 directionForRotation;
 
                 if (isBehindCamera)
                 {
-                    Vector2 screenPos2D = new Vector2(screenPosition.x, screenPosition.y);
+                    Vector2 screenPos2D = anchoredPosition;
                     Vector2 directionFromCenter = screenPos2D - screenCenter;
                     directionFromCenter.x *= -1;
                     directionFromCenter.y = -Mathf.Abs(directionFromCenter.y);
@@ -130,8 +130,8 @@ namespace WrightAngle.Waypoint
                 }
                 else
                 {
-                    positionToClamp = screenPosition;
-                    directionForRotation = (new Vector2(screenPosition.x, screenPosition.y) - screenCenter).normalized;
+                    positionToClamp = anchoredPosition;
+                    directionForRotation = (anchoredPosition - screenCenter).normalized;
                 }
 
                 Vector2 clampedPosition = IntersectWithScreenBounds(screenCenter, positionToClamp, screenBounds);

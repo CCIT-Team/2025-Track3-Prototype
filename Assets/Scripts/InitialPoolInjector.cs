@@ -16,16 +16,8 @@ public class InitialPoolInjector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObjectPool pool = new GameObjectPool(_prefab, Vector3.zero, Quaternion.identity, null, _initialPoolCapacity, _maxCapacity);
+        GameObjectPool pool = new GameObjectPool(_prefab, Vector3.zero, Quaternion.identity, transform, _initialPoolCapacity, _maxCapacity);
 
-        foreach (var i in _targets)
-        {
-            IPoolable poolable = null;
-            if (i.TryGetComponent<IPoolable>(out poolable))
-            {
-                poolable.SetPoolInstance(pool);
-            }
-
-        }
+        FindObjectOfType<BucketControllerMerged>().SetPoolInstance(pool);
     }
 }

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2970711219029722583}
   m_Layer: 4
   m_Name: SoilParticleSand_Merged
-  m_TagString: Untagged
+  m_TagString: SoilParticle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -56,7 +56,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2bf583fe879d8d549be7bdb42970aba7, type: 2}
+  - {fileID: 2100000, guid: 7b706650f13099148ad605bf45220f92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

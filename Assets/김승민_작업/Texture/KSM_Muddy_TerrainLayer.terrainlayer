@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: KSM_Muddy_TerrainLayer
-  m_DiffuseTexture: {fileID: 2800000, guid: 311fa94216ea77342a20e99b01ed6e69, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: 5503e848bfc487842a5534e1959e213a, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: 40b0b45970ef04f4883b774fd1e09bf9, type: 3}
   m_MaskMapTexture: {fileID: 2800000, guid: 11698f69426d8ce4bbeec91a4b739247, type: 3}
   m_TileSize: {x: 30, y: 30}

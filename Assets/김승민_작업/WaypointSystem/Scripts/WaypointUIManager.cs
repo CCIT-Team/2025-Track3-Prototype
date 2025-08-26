@@ -147,8 +147,13 @@ namespace WrightAngle.Waypoint
                 // Determine if a marker should be displayed based on screen status and settings.
                 bool shouldShowMarker = isOnScreen || (settings.UseOffScreenIndicators && !isOnScreen);
 
+                Debug.Log(isOnScreen + "||" + targetWorldPos);
+
                 if (shouldShowMarker)
                 {
+                    Vector2 localPoint;
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(markerParentCanvas, screenPos, waypointCamera, out localPoint);
+
                     // --- Get or Activate Marker ---
                     // Try to get an existing marker; if none exists, retrieve one from the pool.
                     if (!activeMarkers.TryGetValue(target, out WaypointMarkerUI markerInstance))
@@ -161,7 +166,7 @@ namespace WrightAngle.Waypoint
 
                     // --- Update Marker Visuals ---
                     // Call the marker's UpdateDisplay method to set its position, rotation, and scale.
-                    markerInstance.UpdateDisplay(screenPos, isOnScreen, isBehindCamera, _cachedWaypointCamera, settings, distanceToTarget);
+                    markerInstance.UpdateDisplay(localPoint, isOnScreen, isBehindCamera, _cachedWaypointCamera, settings, distanceToTarget);
                 }
                 else // Marker should not be shown (e.g., off-screen and indicators disabled).
                 {

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UpdateFrequency: 0.01
   GameMode: 0
-  MarkerPrefab: {fileID: 6229256527508535590, guid: 22f58613e70b4f944b9447892f34b727, type: 3}
+  MarkerPrefab: {fileID: 6229256527508535590, guid: 22f58613e70b4f944b9447892f34b727,
+    type: 3}
   MaxVisibleDistance: 1000
   IgnoreZAxisForDistance2D: 1
   UseOffScreenIndicators: 1

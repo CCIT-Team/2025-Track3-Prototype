@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: KSM_Tidal_Pools_TerrainLayer
-  m_DiffuseTexture: {fileID: 2800000, guid: 65c50b065f264b042a12153fb6454aa5, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: 43df250eb822607459734dbbfa0d07b5, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: b58287763d1bd854284e4a7e041c9791, type: 3}
   m_MaskMapTexture: {fileID: 2800000, guid: 7d2155ba561aec340b68d5d0ce0f6fdc, type: 3}
   m_TileSize: {x: 30, y: 30}

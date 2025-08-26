@@ -31,7 +31,7 @@ public class GameObjectPool
 
     private GameObject CreateNewObject()
     {
-        GameObject spawnedObject = GameObject.Instantiate(_prefab, _initialSpawnPoint, _initialSpawnQuaternion);
+        GameObject spawnedObject = GameObject.Instantiate(_prefab, _initialSpawnPoint, _initialSpawnQuaternion,_initialSpawnParent);
 
         if (spawnedObject == null)
         {
@@ -41,7 +41,6 @@ public class GameObjectPool
         IPoolable poolableInterface = spawnedObject.GetComponent<IPoolable>();
 
         spawnedObject.SetActive(false);
-        spawnedObject.transform.SetParent(_initialSpawnParent);
 
         if (poolableInterface == null)
         {

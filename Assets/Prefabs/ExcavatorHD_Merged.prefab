@@ -26435,7 +26435,7 @@ MonoBehaviour:
   - {fileID: 1630037346215499621}
   motorTorque: 500
   brakeTorque: 1000
-  body: {fileID: 0}
+  body: {fileID: 4148654694876362102}
 --- !u!54 &4148654694876362102
 Rigidbody:
   m_ObjectHideFlags: 0
