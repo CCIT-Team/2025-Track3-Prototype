@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &957807644670414947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3116205831741087995}
+  - component: {fileID: 6087596744940099288}
+  m_Layer: 4
+  m_Name: KSM_Main Water System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3116205831741087995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957807644670414947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 245.9571, y: 45.7, z: 286.6348}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6087596744940099288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957807644670414947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93eb560ae5ebcd8459ef03cd3eccbd16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Transparent: 19.1
+  WaterColor: {r: 1, g: 1, b: 1, a: 1}
+  TurbidityColor: {r: 0.17065683, g: 0.5395727, b: 0.5566038, a: 1}
+  WindSpeed: 3
+  WindRotation: 251
+  WindTurbulence: 0.097
+  FftWavesQuality: 256
+  FftWavesCascades: 4
+  WavesAreaScale: 1
+  WavesTimeScale: 1
+  WindZone: {fileID: 0}
+  WindZoneSpeedMultiplier: 1
+  WindZoneTurbulenceMultiplier: 1
+  ScreenSpaceReflection: 0
+  PlanarReflection: 0
+  AnisotropicReflectionsScale: 0.5
+  OverrideSkyColor: 0
+  CustomSkyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  ReflectSun: 1
+  ReflectedSunCloudinessStrength: 0.04
+  ReflectedSunStrength: 1
+  RefractionMode: 1
+  RefractionAproximatedDepth: 3
+  RefractionSimpleStrength: 0.25
+  RefractionDispersion: 0
+  RefractionDispersionStrength: 0.25
+  OceanFoam: 0
+  OceanFoamStrength: 0.515
+  OceanFoamDisappearSpeedMultiplier: 0.5
+  OceanFoamTextureSize: 30
+  WetEffect: 0
+  WetStrength: 1
+  WetnessHeightAboveWater: 2
+  VolumetricLighting: 0
+  VolumetricLightTemporalReprojectionAccumulationFactor: 0.35
+  VolumetricLightUseBlur: 0
+  VolumetricLightBlurRadius: 2
+  VolumetricLightUseAdditionalLightsCaustic: 0
+  CausticEffect: 0
+  CausticDepth: 4
+  CausticStrength: 4
+  UnderwaterEffect: 0
+  UnderwaterReflectionMode: 1
+  UseUnderwaterHalfLineTensionEffect: 1
+  UseWaterDropsEffect: 1
+  UnderwaterHalfLineTensionScale: 0.5
+  OverrideUnderwaterTransparent: 0
+  UnderwaterTransparentOffset: 5
+  ShowColorSettings: 1
+  ShowWavesSettings: 1
+  ShowReflectionSettings: 0
+  ShowRefractionSettings: 1
+  ShowFoamSettings: 1
+  ShowWetSettings: 1
+  ShowVolumetricSettings: 0
+  ShowCausticEffectSettings: 1
+  ShowUnderwaterEffectSettings: 0
+  AutoUpdateIntersections: 1
+  WaterRenderingActive: 1
