@@ -17,8 +17,8 @@ public class TrackWheel_Merged : MonoBehaviour
     {
 
         // 虐 涝仿 贸府
-        float leftInput = Input.GetKey(KeyCode.T) ? 1 : Input.GetKey(KeyCode.G) ? -1 : 0;
-        float rightInput = Input.GetKey(KeyCode.U) ? 1 : Input.GetKey(KeyCode.J) ? -1 : 0;
+        float leftInput = VirtualInput.inputs[(int)EINPUT.WheelLF] ? 1 : VirtualInput.inputs[(int)EINPUT.WheelLB] ? -1 : 0;
+        float rightInput = VirtualInput.inputs[(int)EINPUT.WheelRF] ? 1 : VirtualInput.inputs[(int)EINPUT.WheelRB] ? -1 : 0;
 
         // 哭率 官柠 贸府
         foreach (WheelCollider wc in leftWheels)

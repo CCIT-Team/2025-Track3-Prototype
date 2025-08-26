@@ -50,23 +50,23 @@ public class ExcavatorController_KSMCopy : MonoBehaviour
         float dt = Time.deltaTime;
 
         // 스윙 (Q / E)
-        if (VirtualInput.inputs[(int)EINPUT.Q]) swingAngle -= swingSpeed * dt;
-        if (VirtualInput.inputs[(int)EINPUT.E]) swingAngle += swingSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.SwingLeft]) swingAngle -= swingSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.SwingRight]) swingAngle += swingSpeed * dt;
         swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
         // 붐 (W / S)
-        if (VirtualInput.inputs[(int)EINPUT.W]) boomAngle += boomSpeed * dt;
-        if (VirtualInput.inputs[(int)EINPUT.S]) boomAngle -= boomSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.BoomUp]) boomAngle += boomSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.BoomDown]) boomAngle -= boomSpeed * dt;
         boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
         // 암 (A / D)
-        if (VirtualInput.inputs[(int)EINPUT.A]) armAngle += armSpeed * dt;
-        if (VirtualInput.inputs[(int)EINPUT.D]) armAngle -= armSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.ArmUp]) armAngle += armSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.ArmDown]) armAngle -= armSpeed * dt;
         armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
         // 버킷 (R / F)
-        if (VirtualInput.inputs[(int)EINPUT.R]) bucketAngle += bucketSpeed * dt;
-        if (VirtualInput.inputs[(int)EINPUT.F]) bucketAngle -= bucketSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.BucketUp]) bucketAngle += bucketSpeed * dt;
+        if (VirtualInput.inputs[(int)EINPUT.BucketDown]) bucketAngle -= bucketSpeed * dt;
         bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
     }
 
@@ -76,12 +76,12 @@ public class ExcavatorController_KSMCopy : MonoBehaviour
         swing.localRotation = initSwingLocalRot * Quaternion.AngleAxis(swingAngle, Vector3.forward);
 
         // Boom: X축 (Vector3.up)
-        boom.localRotation = initBoomLocalRot * Quaternion.AngleAxis(boomAngle, Vector3.up);
+        boom.localRotation = initBoomLocalRot * Quaternion.AngleAxis(boomAngle, Vector3.right);
 
         // Arm: Y축 (Vector3.up)
-        arm.localRotation = initArmLocalRot * Quaternion.AngleAxis(armAngle, Vector3.up);
+        arm.localRotation = initArmLocalRot * Quaternion.AngleAxis(armAngle, Vector3.right);
 
         // Bucket: Y축 (Vector3.up)
-        bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.up);
+        bucket.localRotation = initBucketLocalRot * Quaternion.AngleAxis(bucketAngle, Vector3.right);
     }
 }

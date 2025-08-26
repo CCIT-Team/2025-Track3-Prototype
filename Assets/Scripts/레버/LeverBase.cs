@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Oculus.Interaction;
+using Unity.Mathematics;
 
 public class LeverBase : MonoBehaviour
 {
@@ -54,5 +55,10 @@ public class LeverBase : MonoBehaviour
     virtual protected void LeverInput()
     {
 
+    }
+
+    public void ResetRotation()
+    {
+        transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
 }
