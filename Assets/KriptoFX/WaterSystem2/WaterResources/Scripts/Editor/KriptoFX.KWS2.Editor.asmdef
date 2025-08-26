@@ -1,0 +1,16 @@
+{
+    "name": "KriptoFX.KWS2.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:19db8fea26d333b429867702a7138f47"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

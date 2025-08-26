@@ -27,9 +27,26 @@ public class BucketGrabberMultiMerged : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             _grabbed[i] = new List<Rigidbody>();
-            grabZones[i].enabled = (i == 0);
-            var forwarder = grabZones[i].gameObject.GetComponent<ZoneForwarderMerged>();//add
-            forwarder.Initialize(this, i, soilLayer);
+            if (grabZones[i] != null)
+            {
+                grabZones[i].enabled = (i == 0);
+                var forwarder = grabZones[i].GetComponent<ZoneForwarderMerged>();
+                if (forwarder != null) forwarder.Initialize(this, i, soilLayer);
+            }
+            else
+            {
+                Debug.LogError($"[BucketGrabber] grabZones[{i}]가 비었습니다.", this);
+            }
+        }
+    }
+
+    void LateUpdate()
+    {
+        // 실패 복구: Dump가 아닌데 남아 있는 Grabbed를 정리
+        if (_mode != Mode.Dump && TotalGrabbedCount() > 0)
+        {
+            if (_mode == Mode.Dig) SoftDetachZonesPublic(1);
+            else ForceReleaseAll();
         }
     }
 
@@ -38,62 +55,98 @@ public class BucketGrabberMultiMerged : MonoBehaviour
         if (newMode == _mode) return;
         _mode = newMode;
 
-        // Soft detach on Dig (zones >0) and Dump (all zones)
-        if (_mode == Mode.Dig)
-            SoftDetachZones(1);
-        else if (_mode == Mode.Dump)
-            SoftDetachZones(0);
+        // Dig: zone1+ 해제, Dump: 전 존 해제
+        if (_mode == Mode.Dig) SoftDetachZones(1);
+        else if (_mode == Mode.Dump) ForceReleaseAll();
 
         bool ignoreTerrain = (_mode == Mode.Dig);
-        foreach (var bc in bucketColliders)
-            Physics.IgnoreCollision(bc, terrainCollider, ignoreTerrain);
+        if (terrainCollider != null && bucketColliders != null)
+        {
+            foreach (var bc in bucketColliders)
+                if (bc != null) Physics.IgnoreCollision(bc, terrainCollider, ignoreTerrain);
+        }
 
         for (int i = 0; i < grabZones.Length; i++)
-            grabZones[i].enabled = false;
+            if (grabZones[i] != null) grabZones[i].enabled = false;
 
         _grabbingEnabled = (_mode != Mode.Dump);
         _currentZone = 0;
+
         if (_mode == Mode.Idle)
+        {
             for (int i = 0; i < grabZones.Length; i++)
-                grabZones[i].enabled = true;
+                if (grabZones[i] != null) grabZones[i].enabled = true;
+        }
         else if (_mode == Mode.Dig)
-            grabZones[0].enabled = true;
+        {
+            if (grabZones.Length > 0 && grabZones[0] != null)
+                grabZones[0].enabled = true;
+        }
     }
 
     public void Grab(int zoneIndex, GameObject soilObj)
     {
         if (!_grabbingEnabled || zoneIndex != _currentZone) return;
+        if (soilObj == null) return;
         if (!soilObj.CompareTag("SoilParticle")) return;
+
         if (!soilObj.TryGetComponent<Rigidbody>(out var rb) ||
             !soilObj.TryGetComponent<Collider>(out var col)) return;
 
-        // --- 태그를 GrabbedParticle로 바꿔서 SoilParticleMerged에서 스킵되도록 ---
+        // Grab 표시
         soilObj.tag = "GrabbedParticle";
-
         rb.isKinematic = true;
-        col.enabled = false;
-        soilObj.transform.SetParent(grabZones[zoneIndex].transform, true);
+        rb.detectCollisions = false;
+        if (col) col.enabled = false;
+
+        if (zoneIndex >= 0 && zoneIndex < grabZones.Length && grabZones[zoneIndex] != null)
+            soilObj.transform.SetParent(grabZones[zoneIndex].transform, true);
+
         _grabbed[zoneIndex].Add(rb);
 
-        if (_grabbed[zoneIndex].Count >= zoneCapacities[zoneIndex])
+        // 용량 관리
+        if (zoneCapacities != null && zoneIndex < zoneCapacities.Length &&
+            _grabbed[zoneIndex].Count >= zoneCapacities[zoneIndex])
         {
-            grabZones[zoneIndex].enabled = false;
-            if (zoneIndex + 1 < grabZones.Length)
+            if (grabZones[zoneIndex] != null) grabZones[zoneIndex].enabled = false;
+            if (zoneIndex + 1 < grabZones.Length && grabZones[zoneIndex + 1] != null)
             {
                 _currentZone = zoneIndex + 1;
                 grabZones[_currentZone].enabled = true;
             }
             else
+            {
                 _grabbingEnabled = false;
+            }
         }
     }
 
+    /// <summary>전 존 강제 해제(Dump/복구 용)</summary>
+    public void ForceReleaseAll()
+    {
+        SoftDetachZones(0);
+    }
+
+    /// <summary>외부에서 zone1+만 해제하고 싶을 때 호출</summary>
+    public void SoftDetachZonesPublic(int startZone) => SoftDetachZones(startZone);
+
+    /// <summary>총 잡힌 수</summary>
+    public int TotalGrabbedCount()
+    {
+        int sum = 0;
+        if (_grabbed != null)
+            for (int z = 0; z < _grabbed.Length; z++) sum += _grabbed[z].Count;
+        return sum;
+    }
+
     /// <summary>
-    /// Allow particles to drop naturally under gravity without bouncing.
+    /// startZone: 0이면 전 존 해제, 1이면 zone0 유지
     /// </summary>
     private void SoftDetachZones(int startZone)
     {
-        for (int z = startZone; z < _grabbed.Length; z++)
+        if (_grabbed == null) return;
+
+        for (int z = Mathf.Clamp(startZone, 0, _grabbed.Length - 1); z < _grabbed.Length; z++)
         {
             var list = _grabbed[z];
             for (int i = list.Count - 1; i >= 0; i--)
@@ -101,35 +154,39 @@ public class BucketGrabberMultiMerged : MonoBehaviour
                 var rb = list[i];
                 if (rb == null) { list.RemoveAt(i); continue; }
 
+                var go = rb.gameObject;
+
                 // 부모 해제
                 rb.transform.SetParent(null, true);
 
-                // --- 태그를 원래대로 SoilParticle로 복원 ---
-                rb.gameObject.tag = "SoilParticle";
+                // 태그 복원
+                go.tag = "SoilParticle";
 
-                // 겹침 해소용으로 살짝 띄우기
-                if (rb.TryGetComponent<Collider>(out var col))
+                // 콜라이더/충돌 복원
+                if (rb.TryGetComponent<Collider>(out var col) && col != null)
+                    col.enabled = true;
+
+                rb.isKinematic = false;
+                rb.detectCollisions = true;
+                rb.useGravity = true;
+                rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+                rb.constraints = RigidbodyConstraints.None;
+
+                // Terrain에 묻히지 않게 살짝 띄우기
+                var terrain = Terrain.activeTerrain;
+                if (terrain != null)
                 {
                     Vector3 p = rb.position;
-                    float groundY = Terrain.activeTerrain.SampleHeight(p)
-                                    + Terrain.activeTerrain.transform.position.y;
-                    if (p.y < groundY + 0.01f)
-                        p.y = groundY + 0.01f;
+                    float gy = terrain.SampleHeight(p) + terrain.transform.position.y;
+                    if (p.y < gy + 0.01f) p.y = gy + 0.01f;
                     rb.position = p;
-
-                    col.enabled = true;
                 }
 
-                // 물리 시뮬레이션 재개
-                rb.isKinematic = false;
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                // 아주 약한 초기속도(정지관성 해소)
+                if (rb.velocity.sqrMagnitude < 1e-3f) rb.velocity = Vector3.down * 0.1f;
 
                 list.RemoveAt(i);
             }
         }
     }
-
-
-    
 }

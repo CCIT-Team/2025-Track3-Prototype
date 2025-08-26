@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/김승민_작업/KSM_Kong_Terrain.asset.meta
 guid: 47bf1d36bc02952478fbc09355676806
+========
+guid: 429ab2bc7b7e561479d0e5b4ce7870e5
+>>>>>>>> 굴착기_움직임_개선_및_오브젝트_상호작용:Assets/KriptoFX/WaterSystem2/DemoScenes/Terrains/Beach_Sand.asset.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 15600000
