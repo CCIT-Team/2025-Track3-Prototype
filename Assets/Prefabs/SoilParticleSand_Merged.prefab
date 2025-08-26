@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 3235708678475321756}
   - component: {fileID: 5331035250532418146}
   - component: {fileID: 2970711219029722583}
-  m_Layer: 4
+  m_Layer: 8
   m_Name: SoilParticleSand_Merged
-  m_TagString: Untagged
+  m_TagString: SoilParticle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 20.77, z: 2.35}
-  m_LocalScale: {x: 30, y: 30, z: 30}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -56,7 +56,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2bf583fe879d8d549be7bdb42970aba7, type: 2}
+  - {fileID: 2100000, guid: 7b706650f13099148ad605bf45220f92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -115,7 +115,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7661859015373088838}
   serializedVersion: 4
-  m_Mass: 1000
+  m_Mass: 0.5
   m_Drag: 0
   m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -158,4 +158,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   frictionCombine: 2
+  fallbackDestroyIfNoPool: 1
   IsGrabbed: 0

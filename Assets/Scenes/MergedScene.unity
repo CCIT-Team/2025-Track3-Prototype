@@ -546,6 +546,37 @@ PrefabInstance:
       propertyPath: m_Name
       value: ExcavatorHD_Merged
       objectReference: {fileID: 0}
+    - target: {fileID: 4344755301597363330, guid: 167d7b4ea397a4b469e55770f57a00b9,
+        type: 3}
+      propertyPath: terrain
+      value: 
+      objectReference: {fileID: 1853844937}
+    - target: {fileID: 4344755301597363330, guid: 167d7b4ea397a4b469e55770f57a00b9,
+        type: 3}
+      propertyPath: deformManager
+      value: 
+      objectReference: {fileID: 1853844935}
+    - target: {fileID: 4344755301597363330, guid: 167d7b4ea397a4b469e55770f57a00b9,
+        type: 3}
+      propertyPath: _diggedLayerTexture
+      value: 
+      objectReference: {fileID: 8574412962073106934, guid: b39caeb4c72a81445abf30d87ef6ad70,
+        type: 2}
+    - target: {fileID: 7382581936024188155, guid: 167d7b4ea397a4b469e55770f57a00b9,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8571045403738111042, guid: 167d7b4ea397a4b469e55770f57a00b9,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.00917197
+      objectReference: {fileID: 0}
+    - target: {fileID: 8571045403738111042, guid: 167d7b4ea397a4b469e55770f57a00b9,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.017451543
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -25,86 +25,118 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
 
     [Header("Ground Detection")]
     [SerializeField, Tooltip("메시 지형을 레이캐스트로 검출할 레이어")]
-    private LayerMask groundLayerMask;
+    private LayerMask groundLayerMask = ~0;
 
     [Header("Physics Material")]
     [SerializeField, Tooltip("Combine mode for friction material")] private PhysicMaterialCombine frictionCombine = PhysicMaterialCombine.Maximum;
+
+    [Header("Pooling (safety)")]
+    [SerializeField, Tooltip("풀 미연결 시 Destroy로 폴백")] private bool fallbackDestroyIfNoPool = true;
 
     private Rigidbody _rb;
     private Collider _col;
     private float _restTimer;
     private const float epsilon = 0.01f;
 
-    /// <summary>
-    /// 버킷에 잡힌 상태인지 표시하는 플래그
-    /// </summary>
-    [HideInInspector]
-    public bool IsGrabbed = false;
-
-    // 버킷 접촉 플래그
+    [HideInInspector] public bool IsGrabbed = false; // 버킷에 잡힘 표시
     private bool _isTouchingBucket;
 
-    // Grab된 입자 감지: 부모화 상태 검사 via transform.parent
-
-    // —— TerrainLayer 필드 및 접근자 추가 ——
+    // ---- TerrainLayer for painting ----
     private TerrainLayer _layer;
     public void SetLayer(TerrainLayer layer) => _layer = layer;
     public TerrainLayer GetLayer() => _layer;
 
-
-    // IPoolable (optional): 제거 로직에서 활용하지 않으면 생략 가능
+    // ---- Pool ----
     private GameObjectPool _pool;
-
     private bool _isPooled = false;
-
+    private bool _returnedOrDestroyed = false; // 중복 반납/삭제 방지
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _col = GetComponent<Collider>();
 
-        // PhysicMaterial 세팅
-        var mat = new PhysicMaterial(name + "_SoilPhysMat")
+        if (_col != null)
         {
-            staticFriction = staticFriction,
-            dynamicFriction = dynamicFriction,
-            frictionCombine = frictionCombine,
-            bounciness = 0f,
-            bounceCombine = PhysicMaterialCombine.Minimum
-        };
-        _col.material = mat;
+            var mat = new PhysicMaterial($"{name}_SoilPhysMat")
+            {
+                staticFriction = staticFriction,
+                dynamicFriction = dynamicFriction,
+                frictionCombine = frictionCombine,
+                bounciness = 0f,
+                bounceCombine = PhysicMaterialCombine.Minimum
+            };
+            _col.material = mat;
+        }
+        else
+        {
+            Debug.LogError("[SoilParticleMerged] Collider가 없습니다.", this);
+        }
+
+        if (_rb == null)
+        {
+            Debug.LogError("[SoilParticleMerged] Rigidbody가 없습니다.", this);
+        }
     }
 
     void Start()
     {
-        _rb.drag = dynamicFriction;
-        _rb.angularDrag = dynamicFriction;
+        if (_rb != null)
+        {
+            _rb.drag = dynamicFriction;
+            _rb.angularDrag = dynamicFriction;
+        }
+    }
+
+    void OnEnable()
+    {
+        _returnedOrDestroyed = false;
+        _isTouchingBucket = false;
+
+        if (_col != null) _col.enabled = true;
+        if (_rb != null)
+        {
+            _rb.isKinematic = false;
+            _rb.constraints = RigidbodyConstraints.None;
+            _rb.mass = Mathf.Max(0.01f, _rb.mass <= 0f ? 0.1f : _rb.mass);
+        }
+        gameObject.tag = "SoilParticle";
+    }
+
+    void OnDisable()
+    {
+        // 풀 반납 후 재활용 시 초기화 잔여물 제거
+        _restTimer = 0f;
+        IsGrabbed = false;
+        _isTouchingBucket = false;
     }
 
     void Update()
     {
-        // 1) Skip conditions: Grabbed, kinematic (already settled), or touching bucket
+        if (_rb == null) return; // 방어
+
+        // 1) Skip: 잡힘/키네마틱/부모있음/버킷접촉
         if (!CompareTag("SoilParticle") || _rb.isKinematic || transform.parent != null || _isTouchingBucket)
         {
             _restTimer = 0f;
             return;
         }
 
-        // 2) Get surface height
+        // 2) 지면 탐지 실패 → 안전 제거
         if (!TryGetSurfaceY(out float surfaceY))
         {
             DestroySelf();
             return;
         }
 
-        // 3) Below ground by threshold -> destroy
+        // 3) 지형 아래로 일정 이하 → 제거
         if (transform.position.y < surfaceY - destroyBelowOffset)
         {
             DestroySelf();
             return;
         }
 
-        // 4) Slightly below surface -> snap and settle
+        // 4) 표면 살짝 아래 → 스냅 후 정지
         if (transform.position.y < surfaceY + epsilon)
         {
             Vector3 p = transform.position;
@@ -119,59 +151,66 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
             _restTimer = 0f;
             return;
         }
-
-        // 5) Otherwise let physics simulation run
+        // 5) else: 자유 낙하/슬라이딩
     }
 
     private bool TryGetSurfaceY(out float surfaceY)
     {
-        RaycastHit hit;
-        Vector3 origin = transform.position + Vector3.up;
-        if (Physics.Raycast(origin, Vector3.down, out hit, Mathf.Infinity, groundLayerMask))
+        // 메시 지면 우선
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out var hit, Mathf.Infinity, groundLayerMask))
         {
             surfaceY = hit.point.y;
             return true;
         }
+        // Terrain 폴백
         if (Terrain.activeTerrain != null)
         {
             surfaceY = Terrain.activeTerrain.SampleHeight(transform.position)
-                         + Terrain.activeTerrain.transform.position.y;
+                       + Terrain.activeTerrain.transform.position.y;
             return true;
         }
-        surfaceY = transform.position.y;
+        surfaceY = transform.position.y; // 마지막 폴백
         return false;
-    }
-
-    void OnEnable()
-    {
-        _isTouchingBucket = false;
-        _col.enabled = true;
-        _rb.isKinematic = false;
-        _rb.constraints = RigidbodyConstraints.None;
-        _rb.mass = 0.1f;
-        gameObject.tag = "SoilParticle";
     }
 
     private void DestroySelf()
     {
-        //Destroy(gameObject);
-        _pool.ReturnGameObject(gameObject);
+        if (_returnedOrDestroyed) return; // 중복 방지
+        _returnedOrDestroyed = true;
+
+        // 풀 경로(정상): 풀 인스턴스 있고, 이 오브젝트가 풀 소속이라고 표시된 경우
+        if (_pool != null && _isPooled)
+        {
+            _pool.ReturnGameObject(gameObject);
+            return;
+        }
+
+        // 폴백: 풀 미연결 or 풀 소속 표시가 안 된 경우
+        if (fallbackDestroyIfNoPool)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            // 풀 미연결인데 Destroy를 원치 않으면 비활성화만
+            gameObject.SetActive(false);
+        }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Bucket"))
-            _isTouchingBucket = true;
+        if (other.CompareTag("Bucket")) _isTouchingBucket = true;
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Bucket"))
-            _isTouchingBucket = false;
+        if (other.CompareTag("Bucket")) _isTouchingBucket = false;
     }
 
     void OnCollisionEnter(Collision col)
     {
+        if (_rb == null) return;
+
         if (col.collider.CompareTag("Bucket"))
         {
             _isTouchingBucket = true;
@@ -180,17 +219,18 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         if (_rb.isKinematic) return;
         if (!col.collider.CompareTag("SoilParticle")) return;
 
-        // 충돌 시 속도 보정
-        Vector3 normal = col.contacts[0].normal;
-        Vector3 v = _rb.velocity;
-        Vector3 comp = Vector3.Project(v, normal);
+        // 충돌 속도 보정
+        var normal = col.contacts[0].normal;
+        var v = _rb.velocity;
+        var comp = Vector3.Project(v, normal);
         _rb.velocity = v - comp;
         _rb.angularVelocity = Vector3.zero;
     }
 
     void OnCollisionStay(Collision col)
     {
-        if (_rb.isKinematic) return;
+        if (_rb == null || _rb.isKinematic) return;
+
         if (!col.collider.CompareTag("SoilParticle"))
         {
             _restTimer = 0f;
@@ -199,7 +239,7 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
 
         bool hasSupport = false;
         Vector3 avgNorm = Vector3.zero;
-        foreach (ContactPoint cp in col.contacts)
+        foreach (var cp in col.contacts)
         {
             avgNorm += cp.normal;
             if (!hasSupport && Vector3.Dot(cp.normal, Vector3.up) > 0.5f)
@@ -211,7 +251,7 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         float slopeAng = Vector3.Angle(avgNorm, Vector3.up);
         if (slopeAng > freezeSlopeAngleDeg) { _restTimer = 0f; return; }
 
-        // 속도 감쇠
+        // 감쇠
         Vector3 vel = _rb.velocity;
         vel.x *= 0.1f; vel.z *= 0.1f;
         _rb.velocity = vel;
@@ -223,16 +263,14 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
             _restTimer += Time.deltaTime;
             if (_restTimer >= restTime)
             {
-                Vector3 supportPt = Vector3.zero;
-                foreach (ContactPoint cp in col.contacts)
+                Vector3 supportPt = transform.position;
+                foreach (var cp in col.contacts)
                 {
                     if (Vector3.Dot(cp.normal, Vector3.up) > 0.5f)
-                    {
-                        supportPt = cp.point;
-                        break;
-                    }
+                    { supportPt = cp.point; break; }
                 }
-                Vector3 p = transform.position;
+
+                var p = transform.position;
                 p.y = supportPt.y + epsilon;
                 transform.position = p;
 
@@ -240,7 +278,6 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
                 _rb.angularVelocity = Vector3.zero;
                 _rb.isKinematic = true;
                 _rb.constraints = RigidbodyConstraints.FreezeAll;
-
                 _restTimer = 0f;
             }
         }
@@ -252,6 +289,8 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
 
     void OnCollisionExit(Collision col)
     {
+        if (_rb == null) return;
+
         if (col.collider.CompareTag("Bucket"))
         {
             _isTouchingBucket = false;
@@ -261,23 +300,9 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
             _rb.constraints = RigidbodyConstraints.None;
     }
 
-    public void SetPoolInstance(GameObjectPool poolInstance)
-    {
-        _pool = poolInstance;
-    }
-
-    public bool ComparePoolInstance(GameObjectPool poolInstance)
-    {
-        return _pool == poolInstance;
-    }
-
-    public bool IsPooled()
-    {
-        return _isPooled;
-    }
-
-    public void SetPooled(bool option)
-    {
-        _isPooled = option;
-    }
+    // ---------- IPoolable ----------
+    public void SetPoolInstance(GameObjectPool poolInstance) { _pool = poolInstance; }
+    public bool ComparePoolInstance(GameObjectPool poolInstance) { return _pool == poolInstance; }
+    public bool IsPooled() { return _isPooled; }
+    public void SetPooled(bool option) { _isPooled = option; }
 }
