@@ -15,7 +15,7 @@ public enum EINPUT
     BucketUp,
     BucketDown,
     WheelRF,
-    WheelRb,
+    WheelRB,
     WheelLF,
     WheelLB,
     Count
