@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Bucket
   - SoilParticle
+  - GrabbedParticle
   layers:
   - Default
   - TransparentFX

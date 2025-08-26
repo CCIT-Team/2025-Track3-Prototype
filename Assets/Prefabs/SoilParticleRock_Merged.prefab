@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 108234900462713891}
   - component: {fileID: 7556044435491872480}
   - component: {fileID: 1814659034515393986}
-  m_Layer: 4
+  m_Layer: 8
   m_Name: SoilParticleRock_Merged
   m_TagString: SoilParticle
   m_Icon: {fileID: 0}
@@ -156,6 +156,6 @@ MonoBehaviour:
   destroyBelowOffset: 0.1
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   frictionCombine: 3
   IsGrabbed: 0

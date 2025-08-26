@@ -19,5 +19,6 @@ public class InitialPoolInjector : MonoBehaviour
         GameObjectPool pool = new GameObjectPool(_prefab, Vector3.zero, Quaternion.identity, transform, _initialPoolCapacity, _maxCapacity);
 
         FindObjectOfType<BucketControllerMerged>().SetPoolInstance(pool);
+        FindObjectOfType<TerrainRaiseManagerMerged>().SetPoolInstance(pool);
     }
 }
