@@ -150,9 +150,9 @@ MonoBehaviour:
   dynamicFriction: 1
   restThreshold: 0.1
   restTime: 0.2
-  freezeSlopeAngleDeg: 55
-  bakeRadius: 0.5
-  heightOffset: 0.3
+  freezeSlopeAngleDeg: 75
+  bakeRadius: 0.7
+  heightOffset: 0.5
   destroyBelowOffset: 0.1
   groundLayerMask:
     serializedVersion: 2

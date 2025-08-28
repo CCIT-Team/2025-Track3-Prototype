@@ -23,6 +23,7 @@ public class ModelLinker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        modelObject.transform.localRotation = targetObject.transform.localRotation;
         for (int i = 0; i < linkObjects.Length; i++)
         {
             linkObjects[i].transform.localRotation = targetTransforms[i].localRotation;

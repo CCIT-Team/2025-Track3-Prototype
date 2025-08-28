@@ -347,8 +347,4 @@ public class BucketControllerMerged : MonoBehaviour
         if (_col != null && _terrainCollider != null)
             Physics.IgnoreCollision(_col, _terrainCollider, isDigging);
     }
-
-    // IPoolable
-    public void SetPoolInstance(GameObjectPool pool) => _pool = pool;
-    public bool ComparePoolInstance(GameObjectPool pool) => _pool == pool;
 }

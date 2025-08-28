@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class SoilParticleMerged : MonoBehaviour, IPoolable
+public class SoilParticleMerged : MonoBehaviour
 {
     [Header("Friction Coefficients")]
     [SerializeField, Tooltip("Static friction coefficient (μ)")] private float staticFriction = 1.2f;
@@ -109,6 +109,8 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         _restTimer = 0f;
         IsGrabbed = false;
         _isTouchingBucket = false;
+
+        Destroy(gameObject);
     }
 
     void Update()
@@ -299,10 +301,4 @@ public class SoilParticleMerged : MonoBehaviour, IPoolable
         if (col.collider.CompareTag("SoilParticle"))
             _rb.constraints = RigidbodyConstraints.None;
     }
-
-    // ---------- IPoolable ----------
-    public void SetPoolInstance(GameObjectPool poolInstance) { _pool = poolInstance; }
-    public bool ComparePoolInstance(GameObjectPool poolInstance) { return _pool == poolInstance; }
-    public bool IsPooled() { return _isPooled; }
-    public void SetPooled(bool option) { _isPooled = option; }
 }

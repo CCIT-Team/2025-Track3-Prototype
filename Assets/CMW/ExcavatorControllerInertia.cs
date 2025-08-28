@@ -2,16 +2,6 @@
 
 public class ExcavatorControllerInertia : MonoBehaviour
 {
-    // ===== 입력 소스 =====
-    public enum InputMode { UnityKeys, VirtualInput }
-    [Header("Input Source")]
-    public InputMode inputMode = InputMode.UnityKeys;
-    public KeyCode keyQ = KeyCode.Q, keyE = KeyCode.E;
-    public KeyCode keyW = KeyCode.W, keyS = KeyCode.S;
-    public KeyCode keyA = KeyCode.A, keyD = KeyCode.D;
-    public KeyCode keyR = KeyCode.R, keyF = KeyCode.F;
-    public int idxQ = 0, idxE = 1, idxW = 2, idxS = 3, idxA = 4, idxD = 5, idxR = 6, idxF = 7;
-
     // ===== 파트 =====
     [Header("Excavator Parts")]
     public Transform swing;
@@ -162,11 +152,11 @@ public class ExcavatorControllerInertia : MonoBehaviour
         float dt = Time.deltaTime;
 
         // 0) 입력 의도
-        bool wantDownBoom = GetKey(keyS, idxS);
-        bool wantDownArm = GetKey(keyD, idxD);
-        bool wantDownBucket = GetKey(keyF, idxF);
+        bool wantDownBoom = VirtualInput.inputs[(int)EINPUT.BoomDown];
+        bool wantDownArm = VirtualInput.inputs[(int)EINPUT.ArmDown];
+        bool wantDownBucket = VirtualInput.inputs[(int)EINPUT.BucketDown];
         bool wantDownAny = wantDownBoom || wantDownArm || wantDownBucket;
-        bool wantUpAny = GetKey(keyW, idxW) || GetKey(keyA, idxA) || GetKey(keyR, idxR);
+        bool wantUpAny = VirtualInput.inputs[(int)EINPUT.BoomUp] || VirtualInput.inputs[(int)EINPUT.ArmUp] || VirtualInput.inputs[(int)EINPUT.BucketUp];
 
         // 1) 센서 + 스타트/데드존/테어
         float rawLift = (loadSensor ? Mathf.Max(0f, loadSensor.totalMass) : 0f);
@@ -253,24 +243,23 @@ public class ExcavatorControllerInertia : MonoBehaviour
 
         _cmdSwing = _cmdBoom = _cmdArm = _cmdBucket = false;
 
-        // 스윙 (Q/E)
-        if (GetKey(keyQ, idxQ)) { swingAngle -= sSwing * dt; _cmdSwing = true; }
-        if (GetKey(keyE, idxE)) { swingAngle += sSwing * dt; _cmdSwing = true; }
+        if (VirtualInput.inputs[(int)EINPUT.SwingLeft]) { swingAngle -= sSwing * dt; _cmdSwing = true; }
+        if (VirtualInput.inputs[(int)EINPUT.SwingRight]) { swingAngle += sSwing * dt; _cmdSwing = true; }
         swingAngle = Mathf.Clamp(swingAngle, minSwingAngle, maxSwingAngle);
 
         // 붐 (W/S)
-        if (GetKey(keyW, idxW) && !overHardLift) { boomAngle += sBoom * dt; _cmdBoom = true; lastDirBoom = +1f; }
-        if (GetKey(keyS, idxS) && !overHardPush && !crushing) { boomAngle -= sBoom * dt; _cmdBoom = true; lastDirBoom = -1f; }
+        if (VirtualInput.inputs[(int)EINPUT.BoomUp] && !overHardLift) { boomAngle += sBoom * dt; _cmdBoom = true; lastDirBoom = +1f; }
+        if (VirtualInput.inputs[(int)EINPUT.BoomDown] && !overHardPush && !crushing) { boomAngle -= sBoom * dt; _cmdBoom = true; lastDirBoom = -1f; }
         boomAngle = Mathf.Clamp(boomAngle, minBoomAngle, maxBoomAngle);
 
         // 암 (A/D)
-        if (GetKey(keyA, idxA) && !overHardLift) { armAngle += sArm * dt; _cmdArm = true; lastDirArm = +1f; }
-        if (GetKey(keyD, idxD) && !overHardPush && !crushing) { armAngle -= sArm * dt; _cmdArm = true; lastDirArm = -1f; }
+        if (VirtualInput.inputs[(int)EINPUT.ArmUp] && !overHardLift) { armAngle += sArm * dt; _cmdArm = true; lastDirArm = +1f; }
+        if (VirtualInput.inputs[(int)EINPUT.ArmDown] && !overHardPush && !crushing) { armAngle -= sArm * dt; _cmdArm = true; lastDirArm = -1f; }
         armAngle = Mathf.Clamp(armAngle, minArmAngle, maxArmAngle);
 
         // 버킷 (R/F)
-        if (GetKey(keyR, idxR) && !overHardLift) { bucketAngle += sBucket * dt; _cmdBucket = true; lastDirBucket = +1f; }
-        if (GetKey(keyF, idxF) && !overHardPush && !crushing) { bucketAngle -= sBucket * dt; _cmdBucket = true; lastDirBucket = -1f; }
+        if (VirtualInput.inputs[(int)EINPUT.BucketUp] && !overHardLift) { bucketAngle += sBucket * dt; _cmdBucket = true; lastDirBucket = +1f; }
+        if (VirtualInput.inputs[(int)EINPUT.BucketDown] && !overHardPush && !crushing) { bucketAngle -= sBucket * dt; _cmdBucket = true; lastDirBucket = -1f; }
         bucketAngle = Mathf.Clamp(bucketAngle, minBucketAngle, maxBucketAngle);
 
         // 압착 중엔 하강 타겟만 봉인 (상승/반대방향은 그대로 허용)
@@ -440,23 +429,5 @@ public class ExcavatorControllerInertia : MonoBehaviour
         }
 
         return onGround;
-    }
-
-    // ===== 유틸 =====
-    bool GetKey(KeyCode kc, int idx)
-    {
-        if (inputMode == InputMode.UnityKeys) return Input.GetKey(kc);
-        try
-        {
-            var type = System.Type.GetType("VirtualInput");
-            if (type == null) return false;
-            var field = type.GetField("inputs");
-            if (field == null) return false;
-            var arr = field.GetValue(null) as System.Array;
-            if (arr == null || idx < 0 || idx >= arr.Length) return false;
-            object val = arr.GetValue(idx);
-            return val is bool b && b;
-        }
-        catch { return false; }
     }
 }

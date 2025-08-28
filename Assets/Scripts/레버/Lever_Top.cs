@@ -20,8 +20,6 @@ public class Lever_Top : LeverBase
         VirtualInput.inputs[(int)inputs[2]] = z > threshold; 
         VirtualInput.inputs[(int)inputs[3]] = z < -threshold;
 
-        Debug.Log(VirtualInput.inputs[(int)inputs[0]]+","+ VirtualInput.inputs[(int)inputs[1]] + "," + VirtualInput.inputs[(int)inputs[2]] + "," + VirtualInput.inputs[(int)inputs[3]]);
-
         //if (Mathf.Abs(x) > Mathf.Abs(z))
         //{
         //    // X축(앞뒤)이 더 많이 기울어졌을 때
